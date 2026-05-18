@@ -2,1098 +2,215 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>守葳體系 醫美價目表</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- ★ 每月只換 data.js，這個檔案永遠不用動 ★ -->
+<script src="data.js"></script>
 <style>
-:root {
-  --gold: #c9a84c;
-  --gold-light: #e8cc7a;
-  --gold-dim: #8a6e2f;
-  --dark: #0f1117;
-  --dark2: #181b23;
-  --dark3: #1f2330;
-  --border: rgba(201,168,76,0.22);
-  --text: #f0ece2;
-  --text-dim: #8a8680;
-  --accent: #e07a50;
-  --red: #e05050;
-  --green: #4eaa7a;
-  --blue: #5a80c0;
-  --TAB_H: 56px;
-  --HEADER_H: 60px;
-}
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html, body { height:100%; overflow:hidden; }
-body {
-  background: var(--dark);
-  color: var(--text);
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: 15px;
-}
-
-/* ── HEADER ── */
-.header {
-  position: fixed; top:0; left:0; right:0; z-index:200;
-  height: var(--HEADER_H);
-  background: #0a0c12;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center;
-  padding: 0 14px;
-  gap: 10px;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.7);
-}
-.logo-badge {
-  width: 38px; height: 38px; flex-shrink:0;
-  background: linear-gradient(135deg, var(--gold), #7a5820);
-  border-radius: 9px;
-  display: flex; align-items:center; justify-content:center;
-  font-size: 13px; font-weight: 900; color: #000;
-}
-.logo-text { flex:1; min-width:0; }
-.logo-text h1 { font-size:15px; font-weight:800; color:var(--gold); letter-spacing:1px; }
-.logo-text p { font-size:10px; color:var(--text-dim); letter-spacing:2px; }
-.search-btn {
-  width:40px; height:40px; flex-shrink:0;
-  background: var(--dark3); border:1px solid var(--border);
-  border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-size:18px; cursor:pointer;
-}
-
-/* ── SEARCH OVERLAY ── */
-.search-overlay {
-  position: fixed; inset:0; z-index:500;
-  background: rgba(0,0,0,0.85);
-  display:none; flex-direction:column;
-  padding: 16px;
-}
-.search-overlay.open { display:flex; }
-.search-bar {
-  display:flex; gap:10px; align-items:center;
-  background: var(--dark2);
-  border: 1px solid var(--gold);
-  border-radius: 12px;
-  padding: 12px 14px;
-}
-.search-bar input {
-  flex:1; background:none; border:none; outline:none;
-  color:var(--text); font-size:17px;
-  font-family: 'Noto Sans TC', sans-serif;
-}
-.search-bar input::placeholder { color:var(--text-dim); }
-.search-close {
-  color:var(--gold); font-size:20px; cursor:pointer; padding:4px;
-}
-.search-results {
-  flex:1; overflow-y:auto; margin-top:14px;
-  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
-}
-.search-result-item {
-  padding:14px; border-bottom:1px solid rgba(255,255,255,0.06);
-  cursor:pointer;
-}
-.search-result-item:active { background:rgba(201,168,76,0.08); }
-.sri-name { font-size:15px; color:var(--text); font-weight:500; }
-.sri-meta { font-size:12px; color:var(--text-dim); margin-top:3px; }
-.sri-price { font-size:17px; font-weight:800; color:var(--gold-light); float:right; }
-.search-empty { padding:40px; text-align:center; color:var(--text-dim); font-size:15px; }
-
-/* ── BOTTOM TABS ── */
-.bottom-tabs {
-  position: fixed; bottom:0; left:0; right:0; z-index:200;
-  height: var(--TAB_H);
-  background: #0a0c12;
-  border-top: 1px solid var(--border);
-  display: flex;
-}
-.btab {
-  flex:1; display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  gap:2px; cursor:pointer;
-  color: var(--text-dim);
-  font-size:10px; font-weight:500;
-  border-top: 2px solid transparent;
-  transition: all 0.15s;
-  padding: 6px 0;
-  letter-spacing:0.2px;
-}
-.btab .icon { font-size:20px; line-height:1; }
-.btab.active { color:var(--gold); border-top-color:var(--gold); }
-
-/* ── MAIN CONTENT AREA ── */
-.content-area {
-  position: fixed;
-  top: var(--HEADER_H);
-  bottom: var(--TAB_H);
-  left:0; right:0;
-  overflow:hidden;
-  display:flex; flex-direction:column;
-}
-
-/* ── PANEL ── */
-.panel { display:none; flex-direction:column; height:100%; }
-.panel.active { display:flex; }
-
-/* ── CATEGORY BAR (horizontal scroll) ── */
-.cat-bar {
-  background: var(--dark2);
-  border-bottom: 1px solid var(--border);
-  display:flex; overflow-x:auto; gap:0;
-  scrollbar-width:none; flex-shrink:0;
-}
-.cat-bar::-webkit-scrollbar { display:none; }
-.cat-btn {
-  padding: 13px 16px;
-  font-size: 13px; font-weight:600;
-  color: var(--text-dim); white-space:nowrap;
-  border-bottom: 3px solid transparent;
-  cursor:pointer; transition:all 0.15s;
-  flex-shrink:0;
-}
-.cat-btn.active { color:var(--gold); border-bottom-color:var(--gold); background:rgba(201,168,76,0.06); }
-.cat-btn:active { background:rgba(255,255,255,0.04); }
-
-/* ── SUB CATEGORY BAR ── */
-.subcat-bar {
-  background: var(--dark3);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  display:flex; overflow-x:auto; gap:6px;
-  padding: 8px 12px; flex-shrink:0;
-  scrollbar-width:none;
-}
-.subcat-bar::-webkit-scrollbar { display:none; }
-.subcat-btn {
-  padding: 8px 14px; border-radius:20px;
-  font-size:13px; font-weight:500;
-  color:var(--text-dim); white-space:nowrap;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  cursor:pointer; flex-shrink:0; transition:all 0.15s;
-}
-.subcat-btn.active {
-  color:var(--gold); background:rgba(201,168,76,0.12);
-  border-color:var(--border);
-}
-
-/* ── SCROLL CONTENT ── */
-.scroll-content {
-  flex:1; overflow-y:auto;
-  scrollbar-width:thin; scrollbar-color:var(--border) transparent;
-  padding-bottom: 16px;
-}
-.scroll-content::-webkit-scrollbar { width:4px; }
-.scroll-content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-
-/* ── ITEM ROWS ── */
-.item-row {
-  display:flex; align-items:center;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  gap:10px;
-}
-.item-row:active { background:rgba(201,168,76,0.05); }
-.item-row .item-info { flex:1; min-width:0; }
-.item-row .item-name { font-size:15px; color:var(--text); line-height:1.4; font-weight:500; }
-.item-row .item-meta { font-size:11px; color:var(--text-dim); margin-top:3px; }
-.item-row .item-code { font-family:monospace; }
-.item-row .item-right { text-align:right; flex-shrink:0; }
-.item-row .item-price { font-size:18px; font-weight:800; color:var(--gold-light); }
-.item-row .item-unit { font-size:11px; color:var(--text-dim); display:block; }
-.store-tag {
-  display:inline-block; font-size:10px;
-  background:rgba(90,128,192,0.15); color:var(--blue);
-  border:1px solid rgba(90,128,192,0.2);
-  border-radius:4px; padding:1px 5px; margin-left:4px;
-}
-
-/* ── PACKAGE CARDS ── */
-.pkg-card {
-  margin: 10px 12px;
-  background: var(--dark2);
-  border: 1px solid var(--border);
-  border-radius: 14px; overflow:hidden;
-}
-.pkg-card.limited-pkg {
-  border-color: rgba(224,80,80,0.5);
-  background: linear-gradient(135deg, rgba(224,80,80,0.05) 0%, var(--dark2) 100%);
-}
-/* BIG WARNING BANNER */
-.limit-warning {
-  background: var(--red);
-  color:#fff;
-  padding: 10px 14px;
-  display:flex; align-items:center; gap:8px;
-  font-size:14px; font-weight:800; letter-spacing:0.5px;
-}
-.limit-warning .warn-icon { font-size:18px; }
-
-.pkg-header {
-  padding: 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-}
-.pkg-name { font-size:15px; font-weight:700; color:var(--text); line-height:1.45; }
-.pkg-code { font-size:11px; color:var(--text-dim); font-family:monospace; margin-top:3px; }
-.pkg-price { font-size:22px; font-weight:900; color:var(--gold); white-space:nowrap; flex-shrink:0; }
-.pkg-items { padding: 10px 14px; }
-.pkg-item-row {
-  display:flex; align-items:center; gap:8px;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.pkg-item-row:last-child { border-bottom:none; }
-.pkg-item-code { font-family:monospace; font-size:11px; color:var(--text-dim); flex-shrink:0; width:68px; }
-.pkg-item-name { flex:1; font-size:14px; color:var(--text); }
-.pkg-item-sessions {
-  font-size:12px; font-weight:700; color:var(--accent);
-  background:rgba(224,122,80,0.12); border-radius:6px;
-  padding: 3px 8px; flex-shrink:0;
-}
-.pkg-footer { padding:8px 14px 12px; }
-.pkg-note { font-size:12px; color:var(--text-dim); }
-.pkg-note.expiry { color:var(--green); }
-
-/* ── PROMO CARD ── */
-.promo-card {
-  margin:10px 12px;
-  background: linear-gradient(135deg, rgba(224,122,80,0.1) 0%, var(--dark2) 100%);
-  border: 1px solid rgba(224,122,80,0.35);
-  border-radius: 14px; padding:16px;
-}
-.promo-title { font-size:16px; font-weight:700; color:#f0a070; margin-bottom:8px; }
-.promo-desc { font-size:14px; color:var(--text); line-height:1.65; }
-.promo-period {
-  margin-top:10px; font-size:13px; color:var(--accent);
-  font-weight:600; display:flex; align-items:center; gap:6px;
-}
-
-/* ── STORAGE CARDS ── */
-.storage-note {
-  margin:10px 12px;
-  background:rgba(240,192,64,0.07);
-  border: 1px solid rgba(240,192,64,0.2);
-  border-radius:12px; padding:14px;
-  font-size:13px; color:var(--text-dim); line-height:1.85;
-}
-.storage-card {
-  margin: 8px 12px;
-  background: linear-gradient(135deg, rgba(240,192,64,0.08) 0%, var(--dark2) 100%);
-  border: 1px solid rgba(240,192,64,0.25);
-  border-radius: 14px; padding:14px;
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-}
-.sc-name { font-size:14px; font-weight:600; color:#f0c040; line-height:1.4; }
-.sc-code { font-size:11px; color:var(--text-dim); font-family:monospace; margin-top:2px; }
-.sc-price { font-size:21px; font-weight:900; color:var(--gold); flex-shrink:0; }
-
-/* ── SECTION TITLE ── */
-.section-heading {
-  padding: 14px 16px 6px;
-  font-size:12px; font-weight:700;
-  color:var(--text-dim); letter-spacing:2px;
-  text-transform:uppercase;
-}
-
-/* ── EMPTY STATE ── */
-.empty-state {
-  padding:60px 20px; text-align:center;
-  color:var(--text-dim); font-size:15px; line-height:1.8;
-}
-
-/* ── PRODUCT CARDS ── */
-.product-row {
-  display:flex; align-items:center;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  gap:12px;
-}
-.product-icon {
-  width:44px; height:44px; flex-shrink:0;
-  background:rgba(201,168,76,0.1); border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:20px;
-}
+:root{--gold:#c9a84c;--gl:#e8cc7a;--dark:#0f1117;--d2:#181b23;--d3:#1f2330;--bd:rgba(201,168,76,.22);--txt:#f0ece2;--dim:#8a8680;--red:#e05050;--grn:#4eaa7a;--blu:#5a80c0;--org:#e07a50;--HD:62px;--TAB:58px;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-serif;}
+.hd{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--HD);background:#0a0c12;border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 14px;gap:10px;box-shadow:0 2px 20px rgba(0,0,0,.7);}
+.logo{width:40px;height:40px;flex-shrink:0;border-radius:9px;background:linear-gradient(135deg,var(--gold),#7a5820);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#000;}
+.lt{flex:1;}.lt h1{font-size:15px;font-weight:800;color:var(--gold);letter-spacing:1px;}.lt p{font-size:10px;color:var(--dim);letter-spacing:2px;}
+.sbtn2{width:42px;height:42px;flex-shrink:0;background:var(--d3);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+.sov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.93);display:none;flex-direction:column;padding:16px;}
+.sov.open{display:flex;}
+.sbar{display:flex;gap:10px;align-items:center;background:var(--d2);border:1px solid var(--gold);border-radius:12px;padding:12px 14px;}
+.sbar input{flex:1;background:none;border:none;outline:none;color:var(--txt);font-size:17px;font-family:'Noto Sans TC',sans-serif;}
+.sbar input::placeholder{color:var(--dim);}
+.scls{color:var(--gold);font-size:22px;cursor:pointer;padding:4px;}
+.sres{flex:1;overflow-y:auto;margin-top:12px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent;}
+.sri{padding:14px 4px;border-bottom:1px solid rgba(255,255,255,.06);}
+.sri-t{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.scode{font-family:monospace;font-size:16px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);padding:3px 9px;border-radius:6px;flex-shrink:0;}
+.sprice{font-size:19px;font-weight:900;color:var(--gold);flex-shrink:0;}
+.sname{font-size:15px;color:var(--txt);font-weight:500;line-height:1.4;}
+.smeta{font-size:11px;color:var(--dim);margin-top:3px;}
+.sempty{padding:40px;text-align:center;color:var(--dim);font-size:15px;}
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--TAB);background:#0a0c12;border-top:1px solid var(--bd);display:flex;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--dim);font-size:9.5px;font-weight:600;border-top:2px solid transparent;}
+.tab .ic{font-size:18px;line-height:1;}.tab.on{color:var(--gold);border-top-color:var(--gold);}
+.ca{position:fixed;top:var(--HD);bottom:var(--TAB);left:0;right:0;overflow:hidden;}
+.pn{display:none;flex-direction:column;height:100%;}.pn.on{display:flex;}
+.cb{background:var(--d2);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+.cb::-webkit-scrollbar{display:none;}
+.cbtn{padding:13px 16px;font-size:13px;font-weight:700;color:var(--dim);white-space:nowrap;border-bottom:3px solid transparent;cursor:pointer;flex-shrink:0;}
+.cbtn.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.06);}
+.sb{background:var(--d3);border-bottom:1px solid rgba(255,255,255,.06);display:flex;overflow-x:auto;gap:6px;padding:8px 12px;flex-shrink:0;scrollbar-width:none;}
+.sb::-webkit-scrollbar{display:none;}
+.sbtnn{padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;color:var(--dim);white-space:nowrap;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);cursor:pointer;flex-shrink:0;}
+.sbtnn.on{color:var(--gold);background:rgba(201,168,76,.12);border-color:var(--bd);}
+.sc{flex:1;overflow-y:auto;padding-bottom:16px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent;}
+.sc::-webkit-scrollbar{width:4px;}.sc::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+.ir{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);gap:10px;}
+.ir:active{background:rgba(201,168,76,.05);}.ii{flex:1;min-width:0;}
+.icode{display:inline-block;font-family:monospace;font-size:15px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.22);border-radius:6px;padding:3px 9px;margin-bottom:5px;letter-spacing:.5px;}
+.iname{font-size:15px;color:var(--txt);line-height:1.4;font-weight:500;}.imeta{font-size:11px;color:var(--dim);margin-top:3px;}
+.irg{text-align:right;flex-shrink:0;}.iprice{font-size:18px;font-weight:900;color:var(--gl);}.iunit{font-size:11px;color:var(--dim);display:block;}
+.stag{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;background:rgba(90,128,192,.15);color:var(--blu);border:1px solid rgba(90,128,192,.2);margin-left:4px;}
+.pc{margin:10px 12px;background:var(--d2);border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
+.pc.lim{border-color:rgba(224,80,80,.5);}.pc.nos{border-color:rgba(176,88,32,.5);}
+.lban{background:var(--red);color:#fff;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;}
+.nban{background:#7a3800;color:#ffd090;padding:8px 14px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;}
+.wban{background:#3a2800;color:#ffc060;padding:8px 14px;font-size:12px;line-height:1.6;}
+.ph{padding:14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.pcode{display:inline-block;font-family:monospace;font-size:17px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);border-radius:7px;padding:4px 10px;margin-bottom:6px;letter-spacing:.5px;}
+.pname{font-size:15px;font-weight:700;color:var(--txt);line-height:1.45;}.pstore{font-size:11px;color:var(--dim);margin-top:3px;}
+.pprice{font-size:23px;font-weight:900;color:var(--gold);white-space:nowrap;flex-shrink:0;}
+.pit{padding:10px 14px;}
+.pirow{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.pirow:last-child{border-bottom:none;}
+.picode{font-family:monospace;font-size:13px;font-weight:800;color:var(--gl);background:rgba(201,168,76,.1);border-radius:5px;padding:2px 7px;flex-shrink:0;min-width:72px;text-align:center;}
+.piname{flex:1;font-size:14px;color:var(--txt);}
+.pises{font-size:12px;font-weight:700;color:var(--org);background:rgba(224,122,80,.12);border-radius:6px;padding:3px 8px;flex-shrink:0;}
+.pft{padding:8px 14px 12px;}.pnt{font-size:12px;color:var(--grn);}.pnt.out{color:var(--dim);}
+.sh{padding:14px 16px 6px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+.prc{margin:10px 12px;background:linear-gradient(135deg,rgba(224,122,80,.1),var(--d2));border:1px solid rgba(224,122,80,.35);border-radius:14px;padding:16px;}
+.prt{font-size:16px;font-weight:700;color:#f0a070;margin-bottom:8px;}.prd{font-size:14px;color:var(--txt);line-height:1.65;}.prp{margin-top:10px;font-size:13px;color:var(--org);font-weight:600;}
+.stnote{margin:10px 12px;background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:14px;font-size:13px;color:var(--dim);line-height:1.85;}
+.stcard{margin:8px 12px;background:linear-gradient(135deg,rgba(240,192,64,.08),var(--d2));border:1px solid rgba(240,192,64,.25);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.scname{font-size:14px;font-weight:600;color:#f0c040;line-height:1.4;}.sccode{font-size:11px;color:var(--dim);font-family:monospace;margin-top:2px;}
+.scprice{font-size:21px;font-weight:900;color:var(--gold);flex-shrink:0;}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo-badge">守葳</div>
-  <div class="logo-text">
-    <h1>守葳體系</h1>
-    <p>醫美價目表 2026/05</p>
-  </div>
-  <div class="search-btn" id="openSearch">🔍</div>
+<div class="hd">
+  <div class="logo">守葳</div>
+  <div class="lt"><h1>守葳體系</h1><p id="ver">醫美價目表</p></div>
+  <div class="sbtn2" id="openS">🔍</div>
 </div>
 
-<!-- SEARCH OVERLAY -->
-<div class="search-overlay" id="searchOverlay">
-  <div class="search-bar">
+<div class="sov" id="sov">
+  <div class="sbar">
     <span style="font-size:18px">🔍</span>
-    <input type="text" id="searchInput" placeholder="搜尋項目名稱或編碼…" autocomplete="off">
-    <span class="search-close" id="closeSearch">✕</span>
+    <input type="text" id="si" placeholder="輸入 S編號 或 關鍵字…" autocomplete="off">
+    <span class="scls" id="cls">✕</span>
   </div>
-  <div class="search-results" id="searchResults">
-    <div class="search-empty">輸入關鍵字開始搜尋</div>
-  </div>
+  <div class="sres" id="sres"><div class="sempty">輸入 S編號 或 關鍵字開始搜尋</div></div>
 </div>
 
-<!-- CONTENT -->
-<div class="content-area" id="contentArea">
-
-  <!-- ① 項目價目表 -->
-  <div class="panel active" id="panel-items">
-    <div class="cat-bar" id="itemsCatBar"></div>
-    <div class="subcat-bar" id="itemsSubBar"></div>
-    <div class="scroll-content" id="itemsContent"></div>
-  </div>
-
-  <!-- ② 常態性套組 -->
-  <div class="panel" id="panel-packages">
-    <div class="scroll-content" id="packagesContent"></div>
-  </div>
-
-  <!-- ③ 猛健樂套組 -->
-  <div class="panel" id="panel-mjl">
-    <div class="cat-bar" id="mjlCatBar"></div>
-    <div class="scroll-content" id="mjlContent"></div>
-  </div>
-
-  <!-- ④ 當月活動 -->
-  <div class="panel" id="panel-promo">
-    <div class="scroll-content" id="promoContent"></div>
-  </div>
-
-  <!-- ⑤ 儲值類 -->
-  <div class="panel" id="panel-storage">
-    <div class="scroll-content" id="storageContent"></div>
-  </div>
-
-  <!-- ⑥ 產品類 -->
-  <div class="panel" id="panel-products">
-    <div class="cat-bar" id="prodCatBar"></div>
-    <div class="scroll-content" id="prodContent"></div>
-  </div>
-
+<div class="ca">
+  <div class="pn on" id="pn-items"><div class="cb" id="iCB"></div><div class="sb" id="iSB"></div><div class="sc" id="iC"></div></div>
+  <div class="pn" id="pn-pkg"><div class="cb" id="pkgCB"></div><div class="sc" id="pkgC"></div></div>
+  <div class="pn" id="pn-mjl"><div class="cb" id="mjlCB"></div><div class="sc" id="mjlC"></div></div>
+  <div class="pn" id="pn-promo"><div class="sc" id="proC"></div></div>
+  <div class="pn" id="pn-storage"><div class="sc" id="stC"></div></div>
+  <div class="pn" id="pn-products"><div class="cb" id="proCB"></div><div class="sc" id="proC2"></div></div>
 </div>
 
-<!-- BOTTOM TABS -->
-<div class="bottom-tabs">
-  <div class="btab active" data-panel="items">
-    <span class="icon">📋</span>項目
-  </div>
-  <div class="btab" data-panel="packages">
-    <span class="icon">🗂</span>檔期套組
-  </div>
-  <div class="btab" data-panel="mjl">
-    <span class="icon">💉</span>猛健樂
-  </div>
-  <div class="btab" data-panel="promo">
-    <span class="icon">🎁</span>活動
-  </div>
-  <div class="btab" data-panel="storage">
-    <span class="icon">💳</span>儲值
-  </div>
-  <div class="btab" data-panel="products">
-    <span class="icon">🧴</span>產品
-  </div>
+<div class="tabs">
+  <div class="tab on" data-p="items"><span class="ic">📋</span>項目</div>
+  <div class="tab" data-p="pkg"><span class="ic">🗂</span>常態套組</div>
+  <div class="tab" data-p="mjl"><span class="ic">💉</span>猛健樂</div>
+  <div class="tab" data-p="promo"><span class="ic">⭐</span>檔期/活動</div>
+  <div class="tab" data-p="storage"><span class="ic">💳</span>儲值</div>
+  <div class="tab" data-p="products"><span class="ic">🧴</span>產品</div>
 </div>
 
 <script>
-// ════════════════════════════════
-//  DATA
-// ════════════════════════════════
-const ITEMS_DATA = {
-  "電波類": {
-    "鳳凰電波": [
-      {code:"S101001", name:"鳳凰電波紫鑽900", unit:"顆", price:99999, store:"守蔵"},
-      {code:"S101002", name:"鳳凰身體電波500", unit:"顆", price:140000, store:"守蔵"},
-      {code:"S101003", name:"鳳凰眼周電波450", unit:"顆", price:60000, store:"守蔵"},
-    ],
-    "無雙電波": [
-      {code:"S125003", name:"無雙電波-愛神（眼）單發", unit:"發", price:125, store:"守蔵"},
-      {code:"S125004", name:"無雙電波-雅典娜（臉）單發", unit:"發", price:120, store:"守蔵"},
-    ],
-    "蝴蝶電波": [
-      {code:"S113001", name:"蝴蝶電波", unit:"顆", price:55000, store:"守蔵"},
-      {code:"S113002", name:"蝴蝶電波 / 40mins", unit:"堂", price:45000, store:"守蔵"},
-    ],
-  },
-  "雷射類": {
-    "心動光": [
-      {code:"S118001", name:"心動光梭（臉）", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S118002", name:"心動光 / 局部", unit:"堂", price:8000, store:"守蔵"},
-      {code:"S118003", name:"心動光（飛梭）/ 局部", unit:"堂", price:8000, store:"守蔵"},
-      {code:"S118004", name:"心動光（飛梭）/ 全臉", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S118005", name:"心動光梭（脖）", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S118006", name:"心動光（飛梭）/ 頭皮", unit:"堂", price:8000, store:"守蔵"},
-    ],
-    "皮秒PICOSURE PRO": [
-      {code:"S102025", name:"皮秒PICOSURE PRO / 全臉", unit:"堂", price:25000, store:"守蔵"},
-      {code:"S102026", name:"皮秒PICOSURE PRO / 脖子", unit:"堂", price:25000, store:"守蔵"},
-      {code:"S102027", name:"皮秒PICOSURE PRO / 蜂巢", unit:"發", price:15, store:"守蔵"},
-      {code:"S102028", name:"皮秒PICOSURE PRO / 部位美白", unit:"堂", price:20000, store:"守蔵"},
-      {code:"S102032", name:"皮秒PICOSURE PRO / 腋下美白", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S102033", name:"皮秒PICOSURE PRO / VIO美白", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S102034", name:"皮秒PICOSURE PRO / 微笑線美白", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S102035", name:"皮秒PICOSURE PRO / 上背美白", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S102036", name:"皮秒PICOSURE PRO / 下背美白", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S102037", name:"皮秒PICOSURE PRO / 全背美白", unit:"堂", price:20000, store:"守蔵"},
-    ],
-    "靜脈雷射": [
-      {code:"S602001", name:"靜脈雷射", unit:"堂", price:5000, store:"竹北"},
-    ],
-  },
-  "除毛類": {
-    "真空除毛－女": [
-      {code:"S119001", name:"真空 - 女腋下除毛", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S119002", name:"真空 - 女私密處(全除)除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S119003", name:"真空 - 女私密處(修邊)除毛", unit:"堂", price:8000, store:"守蔵"},
-      {code:"S119004", name:"真空 - 女大腿除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S119005", name:"真空 - 女小腿除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119006", name:"真空 - 女膝蓋除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S119007", name:"真空 - 女上手除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119008", name:"真空 - 女下手除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119009", name:"真空 - 女胸除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119010", name:"真空 - 女腹除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119011", name:"真空 - 女後頸除毛", unit:"堂", price:7000, store:"守蔵"},
-      {code:"S119012", name:"真空 - 女上背除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119013", name:"真空 - 女下背除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119014", name:"真空 - 女臉部雜毛除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S119015", name:"真空 - 女上鬍除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S119016", name:"真空 - 女下鬍除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S119017", name:"真空 - 女下巴除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S119018", name:"真空 - 女髮際除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S119019", name:"真空 - 女肚中線除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S119020", name:"真空 - 女乳暈除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S119021", name:"真空 - 女眉心除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S119022", name:"真空 - 女手指頭除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S119025", name:"真空 - 女其他部位除毛 (S)", unit:"堂", price:2000, store:"守蔵"},
-      {code:"S119026", name:"真空 - 女其他部位除毛 (M)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S119027", name:"真空 - 女其他部位除毛 (L)", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S119028", name:"真空 - 女腳趾頭除毛", unit:"堂", price:3500, store:"守蔵"},
-    ],
-    "真空除毛－男": [
-      {code:"S120001", name:"真空 - 男腋下除毛", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S120002", name:"真空 - 男私密處(全除)除毛", unit:"堂", price:18000, store:"守蔵"},
-      {code:"S120003", name:"真空 - 男私密處(修邊)除毛", unit:"堂", price:13000, store:"守蔵"},
-      {code:"S120004", name:"真空 - 男大腿除毛", unit:"堂", price:20000, store:"守蔵"},
-      {code:"S120005", name:"真空 - 男小腿除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120006", name:"真空 - 男膝蓋除毛", unit:"堂", price:7000, store:"守蔵"},
-      {code:"S120007", name:"真空 - 男上手除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S120008", name:"真空 - 男下手除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S120009", name:"真空 - 男胸除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120010", name:"真空 - 男腹除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120011", name:"真空 - 男後頸除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S120012", name:"真空 - 男上背除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120013", name:"真空 - 男下背除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120014", name:"真空 - 男臉部雜毛除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120018", name:"真空 - 男髮際除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S120019", name:"真空 - 男肚中線除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S120020", name:"真空 - 男乳暈除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S120021", name:"真空 - 男眉心除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S120022", name:"真空 - 男手指頭除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S120023", name:"真空 - 男上下鬍除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S120024", name:"真空 - 男腿除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S120025", name:"真空 - 男其他部位除毛 (S)", unit:"堂", price:2000, store:"守蔵"},
-      {code:"S120026", name:"真空 - 男其他部位除毛 (M)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S120027", name:"真空 - 男其他部位除毛 (L)", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S120028", name:"真空 - 男腳趾頭除毛", unit:"堂", price:4500, store:"守蔵"},
-    ],
-    "海神除毛－女": [
-      {code:"S114001", name:"女腋下除毛", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S114002", name:"女私密處(全除)除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S114003", name:"女私密處(修邊)除毛", unit:"堂", price:8000, store:"守蔵"},
-      {code:"S114004", name:"女大腿除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S114005", name:"女小腿除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114006", name:"女膝蓋除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S114007", name:"女上手除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114008", name:"女下手除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114009", name:"女胸除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114010", name:"女腹除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114011", name:"女後頸除毛", unit:"堂", price:7000, store:"守蔵"},
-      {code:"S114012", name:"女上背除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114013", name:"女下背除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114014", name:"女臉部雜毛除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S114015", name:"女上鬍除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S114016", name:"女下鬍除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S114017", name:"女下巴除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S114018", name:"女髮際除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S114019", name:"女肚中線除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S114020", name:"女乳暈除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S114021", name:"女眉心除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S114022", name:"女手指頭除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S114026", name:"女其他部位除毛 (S)", unit:"堂", price:2000, store:"守蔵"},
-      {code:"S114027", name:"女其他部位除毛 (M)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S114028", name:"女其他部位除毛 (L)", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S114030", name:"女腳趾頭除毛", unit:"堂", price:3500, store:"守蔵"},
-    ],
-    "海神除毛－男": [
-      {code:"S115001", name:"男腋下除毛", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S115002", name:"男私密處(全除)除毛", unit:"堂", price:18000, store:"守蔵"},
-      {code:"S115003", name:"男私密處(修邊)除毛", unit:"堂", price:13000, store:"守蔵"},
-      {code:"S115004", name:"男大腿除毛", unit:"堂", price:20000, store:"守蔵"},
-      {code:"S115005", name:"男小腿除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115006", name:"男膝蓋除毛", unit:"堂", price:7000, store:"守蔵"},
-      {code:"S115007", name:"男上手除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S115008", name:"男下手除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S115009", name:"男胸除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115010", name:"男腹除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115011", name:"男後頸除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S115012", name:"男上背除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115013", name:"男下背除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115014", name:"男臉部雜毛除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115018", name:"男髮際除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S115019", name:"男肚中線除毛", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S115020", name:"男乳暈除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S115021", name:"男眉心除毛", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S115022", name:"男手指頭除毛", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S115023", name:"男上下鬍除毛", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S115024", name:"男腿除毛", unit:"堂", price:15000, store:"守蔵"},
-      {code:"S115026", name:"男其他部位除毛 (S)", unit:"堂", price:2000, store:"守蔵"},
-      {code:"S115027", name:"男其他部位除毛 (M)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S115028", name:"男其他部位除毛 (L)", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S115030", name:"男腳趾頭除毛", unit:"堂", price:4500, store:"守蔵"},
-    ],
-  },
-  "肉毒類": {
-    "BOTOX": [
-      {code:"S201019", name:"BOTOX 肉毒 / 1U", unit:"U", price:250, store:"守蔵"},
-      {code:"S201020", name:"BOTOX 肉毒 / 動態一區", unit:"U", price:4000, store:"守蔵"},
-      {code:"S201021", name:"BOTOX 肉毒 / 咀嚼肌", unit:"堂", price:10000, store:"守蔵"},
-      {code:"S201022", name:"BOTOX 肉毒 / 瓶", unit:"100U", price:20000, store:"守蔵"},
-    ],
-    "Neuronox": [
-      {code:"S201023", name:"Neuronox 肉毒 / 1U", unit:"U", price:160, store:"守蔵"},
-      {code:"S201024", name:"Neuronox 肉毒 / 動態一區", unit:"堂", price:3000, store:"守蔵"},
-      {code:"S201025", name:"Neuronox 肉毒 / 咀嚼肌", unit:"堂", price:7200, store:"守蔵"},
-      {code:"S201026", name:"Neuronox 肉毒 / 100U", unit:"100U", price:14000, store:"守蔵"},
-    ],
-  },
-  "針劑類": {
-    "玻尿酸": [
-      {code:"S202004", name:"沛蓮絲 (M)", unit:"支", price:32000, store:"守蔵"},
-      {code:"S202005", name:"Vital Light", unit:"支", price:16000, store:"守蔵"},
-      {code:"S202001", name:"喬雅登Voluma", unit:"支", price:18000, store:"守蔵"},
-      {code:"S202002", name:"喬雅登Volbella", unit:"支", price:18000, store:"守蔵"},
-      {code:"S202021", name:"喬雅登SkinVive", unit:"支", price:22000, store:"守蔵"},
-      {code:"S202006", name:"喬雅登Volite", unit:"支", price:22000, store:"守蔵"},
-      {code:"S202007", name:"喬雅登Volux", unit:"支", price:25000, store:"守蔵"},
-      {code:"S202017", name:"喬雅登Volift", unit:"支", price:18000, store:"守蔵"},
-      {code:"S202013", name:"Restylane Defyne-亮采", unit:"支", price:25000, store:"守蔵"},
-      {code:"S202014", name:"Restylane Volyme-丰采", unit:"支", price:25000, store:"守蔵"},
-      {code:"S202015", name:"Restylane Refyne-晶采", unit:"支", price:25000, store:"守蔵"},
-      {code:"S202016", name:"Restylane Kysse-漾采", unit:"支", price:25000, store:"守蔵"},
-      {code:"S202018", name:"喬雅露Juvelook（小）", unit:"瓶", price:28000, store:"守蔵"},
-      {code:"S202019", name:"喬雅露Juvelook（大）", unit:"瓶", price:30000, store:"守蔵"},
-      {code:"S202020", name:"逆時針", unit:"支", price:40000, store:"守蔵"},
-    ],
-    "猛健樂": [
-      {code:"S402004", name:"猛健樂（2.5mg / 0.6ml）", unit:"支", price:16000, store:"守蔵"},
-      {code:"S402005", name:"猛健樂（5mg / 0.6ml）", unit:"支", price:16000, store:"守蔵"},
-      {code:"S402006", name:"猛健樂（7.5mg / 0.6ml）", unit:"支", price:22000, store:"守蔵"},
-      {code:"S402007", name:"猛健樂（10mg / 0.6ml）", unit:"支", price:22000, store:"守蔵"},
-    ],
-    "倍克脂": [
-      {code:"S203001", name:"倍克脂 / 瓶", unit:"瓶", price:16000, store:"守蔵"},
-    ],
-    "其他針劑": [
-      {code:"S402001", name:"消疤針 (S)", unit:"次", price:500, store:"守蔵"},
-      {code:"S402001-1", name:"消疤針 (M)", unit:"次", price:1000, store:"守蔵"},
-      {code:"S402001-2", name:"消疤針 (L)", unit:"次", price:2000, store:"守蔵"},
-      {code:"S402002", name:"強效靜脈止痛", unit:"次", price:2000, store:"守蔵"},
-      {code:"S402003", name:"降解酶", unit:"次", price:15000, store:"守蔵"},
-    ],
-  },
-  "點滴類": {
-    "點滴": [
-      {code:"S204006", name:"柔白美膚點滴", unit:"堂", price:2500, store:"守蔵"},
-      {code:"S204007", name:"高效排毒點滴", unit:"堂", price:2500, store:"守蔵"},
-      {code:"S204008", name:"免疫進化點滴", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S204009", name:"養髮健髮點滴", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S204010", name:"頂級抗老點滴", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S204011", name:"紓壓助眠點滴", unit:"堂", price:4500, store:"守蔵"},
-      {code:"S204012", name:"健美燃脂點滴", unit:"堂", price:6000, store:"守蔵"},
-      {code:"S204013", name:"修復滋養點滴", unit:"堂", price:7000, store:"守蔵"},
-      {code:"S204014", name:"雙胜胺 / 加購", unit:"瓶", price:3500, store:"守蔵"},
-      {code:"S204015", name:"胺基酸 / 加購", unit:"瓶", price:500, store:"守蔵"},
-      {code:"S204016", name:"高效代謝點滴", unit:"堂", price:3500, store:"守蔵"},
-    ],
-  },
-  "埋線類": {
-    "埋線": [
-      {code:"S205008", name:"Stratafix 魚骨線 / 鼻", unit:"段", price:5000, store:"台中"},
-      {code:"S205009", name:"Stratafix 魚骨線 / 臉", unit:"段", price:12000, store:"台中"},
-      {code:"S205010", name:"Stratafix 魚骨線 / 鼻 / 埋到好（最多2包）", unit:"堂", price:40000, store:"台中"},
-      {code:"S205011", name:"美特拉 / (條)", unit:"條", price:12000, store:"守蔵"},
-      {code:"S205011-1", name:"美特拉 / (條) / 加購", unit:"條", price:8000, store:"守蔵"},
-    ],
-  },
-  "高壓氧": {
-    "高壓氧": [
-      {code:"S123001", name:"高壓氧 / 30min", unit:"次", price:3000, store:"台中/竹北"},
-      {code:"S123002", name:"高壓氧 / 60min", unit:"次", price:5000, store:"台中/竹北"},
-    ],
-  },
-  "美療類": {
-    "wishpro": [
-      {code:"S117001", name:"wishpro (A) 美白/鎖定保濕/退紅", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S117002", name:"wishpro (B) 抗痘調理/HA超水保濕/類肉毒抗皺", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S117003", name:"wishpro (Brightening 美白)", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S117003-1", name:"wishpro (Brightening 美白) / 加購", unit:"堂", price:1800, store:"守蔵"},
-      {code:"S117004", name:"wishpro (Anti-Aging 保濕)", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S117004-1", name:"wishpro (Anti-Aging 保濕) / 加購", unit:"堂", price:1800, store:"守蔵"},
-      {code:"S117005", name:"wishpro (WISH care 退紅)", unit:"堂", price:3500, store:"守蔵"},
-      {code:"S117005-1", name:"wishpro (WISH care 退紅) / 加購", unit:"堂", price:1800, store:"守蔵"},
-      {code:"S117006", name:"wishpro (Calming Milk 抗痘)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S117006-1", name:"wishpro (Calming Milk 抗痘) / 加購", unit:"堂", price:2200, store:"守蔵"},
-      {code:"S117007", name:"wishpro (Repairing 超鎖水)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S117007-1", name:"wishpro (Repairing 超鎖水) / 加購", unit:"堂", price:2200, store:"守蔵"},
-      {code:"S117008", name:"wishpro (BTX 抗皺)", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S117008-1", name:"wishpro (BTX 抗皺) / 加購", unit:"堂", price:2200, store:"守蔵"},
-    ],
-    "其他美療": [
-      {code:"S105001", name:"水光槍", unit:"堂", price:8000, store:"守蔵"},
-      {code:"S105002", name:"水光槍 / 複合青春因子", unit:"堂", price:12000, store:"守蔵"},
-      {code:"S107002", name:"韓式保濕課程", unit:"堂", price:1500, store:"守蔵"},
-      {code:"S108002", name:"MEICET美測皮膚檢測儀", unit:"次", price:600, store:"守蔵"},
-      {code:"S111010", name:"海菲秀 II / 經典", unit:"堂", price:6600, store:"守蔵"},
-      {code:"S112015", name:"EMBODY核心美力", unit:"堂", price:4000, store:"守蔵"},
-      {code:"S112017", name:"EMSCULPT NEO 熱磁減脂", unit:"堂", price:35000, store:"守蔵"},
-      {code:"S112017-2", name:"EMSCULPT NEO 熱磁減脂 / 加購", unit:"堂", price:13999, store:"守蔵"},
-      {code:"S103022", name:"海芙音波(MPT媚必提)", unit:"條", price:100, store:"守蔵"},
-      {code:"S103023", name:"海芙 DSB 保濕透亮精華液", unit:"次", price:2000, store:"守蔵"},
-      {code:"S122001", name:"頭皮檢測", unit:"次", price:800, store:"守蔵"},
-    ],
-    "PLT / 複合青春因子": [
-      {code:"S207003", name:"PLT / 精裝版", unit:"25瓶", price:120000, store:"守蔵"},
-      {code:"S208001", name:"複合青春因子 / 局部 單點注射", unit:"次", price:10000, store:"守蔵"},
-      {code:"S208002", name:"PLT / 局部 單點注射", unit:"次", price:4000, store:"守蔵"},
-    ],
-  },
-  "植髮相關": {
-    "植髮": [
-      {code:"S902001", name:"Viviscal 薇絲卡魔髮錠", unit:"盒", price:4500, store:"守蔵"},
-      {code:"S902002", name:"菲那絲膜衣錠 Finasteride 1mg", unit:"盒", price:800, store:"守蔵"},
-      {code:"S902003", name:"菲那諾膜衣錠 Finasteride 5mg", unit:"盒", price:600, store:"守蔵"},
-      {code:"S902004", name:"適尿通軟膠囊 0.5mg", unit:"盒", price:1500, store:"守蔵"},
-      {code:"S902007", name:"洛寧錠 Loniten (10mg) 15錠", unit:"錠", price:300, store:"守蔵"},
-      {code:"S902008", name:"洛寧錠 Loniten (10mg) 30錠", unit:"錠", price:600, store:"守蔵"},
-      {code:"S904001", name:"沃泰克黑爾蓬雷射生髮帽", unit:"組", price:60000, store:"守蔵"},
-      {code:"S905001", name:"雷射生髮帽 21mins", unit:"堂", price:800, store:"守蔵"},
-      {code:"S905002", name:"PLT頭皮 / 單針注射", unit:"堂", price:8000, store:"守蔵"},
-    ],
-  },
-  "其他": {
-    "麻醉": [
-      {code:"S206004", name:"舒眠麻醉+術前檢查", unit:"次", price:18000, store:"台中"},
-      {code:"S206005", name:"舒眠麻醉超時 (1hr)", unit:"次", price:2000, store:"台中"},
-      {code:"S501011", name:"舒眠麻醉 - 李佳霖團隊", unit:"次", price:20000, store:"台北/竹北"},
-      {code:"S501012", name:"舒眠麻醉超時(1hrs) - 李佳霖團隊", unit:"次", price:2200, store:"台北/竹北"},
-    ],
-    "行政費用": [
-      {code:"S501001", name:"手續費", unit:"次", price:100, store:"守蔵"},
-      {code:"S501005", name:"診斷書", unit:"張", price:1000, store:"守蔵"},
-      {code:"S501013", name:"紙本病歷申請費", unit:"次", price:200, store:"守蔵"},
-      {code:"S501007", name:"PLT採血操作", unit:"次", price:0, store:"守蔵"},
-      {code:"S501010", name:"INBODY檢測費", unit:"次", price:600, store:"守蔵"},
-      {code:"S401003", name:"Tranex 250mg 追耐（傳明酸）", unit:"錠", price:20, store:"守蔵"},
-    ],
-    "藥品耗材": [
-      {code:"S403001", name:"痘痘藥膏", unit:"條", price:100, store:"守蔵"},
-      {code:"S403002", name:"術前敷料 (LOCAL PACK)", unit:"次", price:100, store:"守蔵"},
-      {code:"S403003", name:"術後敷料 (TBC)", unit:"次", price:100, store:"守蔵"},
-      {code:"S403004", name:"抗組纖胺", unit:"次", price:500, store:"守蔵"},
-      {code:"S502001", name:"接送傘", unit:"支", price:2200, store:"守蔵"},
-    ],
-  },
-};
+const fmt=n=>n!=null?'$'+n.toLocaleString():'依開單';
+const $=id=>document.getElementById(id);
+$('ver').textContent='醫美價目表 '+DATA_VERSION;
 
-const MJL_PACKAGES = [
-  {code:"S802203", name:"猛健樂（2.5mg）+ 紓壓助眠點滴（10+2）", price:54000, group:"紓壓助眠系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204011",name:"紓壓助眠點滴",sessions:12}]},
-  {code:"S802204", name:"猛健樂（5mg）+ 紓壓助眠點滴（10+2）", price:54000, group:"紓壓助眠系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204011",name:"紓壓助眠點滴",sessions:12}]},
-  {code:"S802205", name:"猛健樂（7.5mg）+ 紓壓助眠點滴（10+2）", price:57000, group:"紓壓助眠系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204011",name:"紓壓助眠點滴",sessions:12}]},
-  {code:"S802206", name:"猛健樂（10mg）+ 紓壓助眠點滴（10+2）", price:57000, group:"紓壓助眠系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204011",name:"紓壓助眠點滴",sessions:12}]},
-  {code:"S802207", name:"猛健樂（2.5mg）+ 修復滋養點滴（10+2）", price:79000, group:"修復滋養系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204013",name:"修復滋養點滴",sessions:12}]},
-  {code:"S802208", name:"猛健樂（5mg）+ 修復滋養點滴（10+2）", price:79000, group:"修復滋養系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204013",name:"修復滋養點滴",sessions:12}]},
-  {code:"S802209", name:"猛健樂（7.5mg）+ 修復滋養點滴（10+2）", price:82000, group:"修復滋養系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204013",name:"修復滋養點滴",sessions:12}]},
-  {code:"S802210", name:"猛健樂（10mg）+ 修復滋養點滴（10+2）", price:82000, group:"修復滋養系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204013",name:"修復滋養點滴",sessions:12}]},
-  {code:"S802212", name:"猛健樂（2.5mg）+ 高效代謝點滴（10+2）", price:44000, group:"高效代謝系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204016",name:"高效代謝點滴",sessions:12}]},
-  {code:"S802213", name:"猛健樂（5mg）+ 高效代謝點滴（10+2）", price:44000, group:"高效代謝系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204016",name:"高效代謝點滴",sessions:12}]},
-  {code:"S802214", name:"猛健樂（7.5mg）+ 高效代謝點滴（10+2）", price:47000, group:"高效代謝系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204016",name:"高效代謝點滴",sessions:12}]},
-  {code:"S802215", name:"猛健樂（10mg）+ 高效代謝點滴（10+2）", price:47000, group:"高效代謝系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204016",name:"高效代謝點滴",sessions:12}]},
-  {code:"S802183", name:"猛健樂（2.5mg）+ 柔白美膚點滴（10+2）", price:34000, group:"柔白美膚系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204006",name:"柔白美膚點滴",sessions:12}]},
-  {code:"S802184", name:"猛健樂（5mg）+ 柔白美膚點滴（10+2）", price:34000, group:"柔白美膚系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204006",name:"柔白美膚點滴",sessions:12}]},
-  {code:"S802185", name:"猛健樂（7.5mg）+ 柔白美膚點滴（10+2）", price:37000, group:"柔白美膚系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204006",name:"柔白美膚點滴",sessions:12}]},
-  {code:"S802186", name:"猛健樂（10mg）+ 柔白美膚點滴（10+2）", price:37000, group:"柔白美膚系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204006",name:"柔白美膚點滴",sessions:12}]},
-  {code:"S802187", name:"猛健樂（2.5mg）+ 高效排毒點滴（10+2）", price:34000, group:"高效排毒系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204007",name:"高效排毒點滴",sessions:12}]},
-  {code:"S802188", name:"猛健樂（5mg）+ 高效排毒點滴（10+2）", price:34000, group:"高效排毒系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204007",name:"高效排毒點滴",sessions:12}]},
-  {code:"S802189", name:"猛健樂（7.5mg）+ 高效排毒點滴（10+2）", price:37000, group:"高效排毒系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204007",name:"高效排毒點滴",sessions:12}]},
-  {code:"S802190", name:"猛健樂（10mg）+ 高效排毒點滴（10+2）", price:37000, group:"高效排毒系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204007",name:"高效排毒點滴",sessions:12}]},
-  {code:"S802191", name:"猛健樂（2.5mg）+ 免疫進化點滴（10+2）", price:44000, group:"免疫進化系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204008",name:"免疫進化點滴",sessions:12}]},
-  {code:"S802192", name:"猛健樂（5mg）+ 免疫進化點滴（10+2）", price:44000, group:"免疫進化系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204008",name:"免疫進化點滴",sessions:12}]},
-  {code:"S802193", name:"猛健樂（7.5mg）+ 免疫進化點滴（10+2）", price:47000, group:"免疫進化系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204008",name:"免疫進化點滴",sessions:12}]},
-  {code:"S802194", name:"猛健樂（10mg）+ 免疫進化點滴（10+2）", price:47000, group:"免疫進化系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204008",name:"免疫進化點滴",sessions:12}]},
-  {code:"S802195", name:"猛健樂（2.5mg）+ 養髮健髮點滴（10+2）", price:44000, group:"養髮健髮系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204009",name:"養髮健髮點滴",sessions:12}]},
-  {code:"S802196", name:"猛健樂（5mg）+ 養髮健髮點滴（10+2）", price:44000, group:"養髮健髮系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204009",name:"養髮健髮點滴",sessions:12}]},
-  {code:"S802197", name:"猛健樂（7.5mg）+ 養髮健髮點滴（10+2）", price:47000, group:"養髮健髮系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204009",name:"養髮健髮點滴",sessions:12}]},
-  {code:"S802198", name:"猛健樂（10mg）+ 養髮健髮點滴（10+2）", price:47000, group:"養髮健髮系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204009",name:"養髮健髮點滴",sessions:12}]},
-  {code:"S802199", name:"猛健樂（2.5mg）+ 頂級抗老點滴（10+2）", price:54000, group:"頂級抗老系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S204010",name:"頂級抗老點滴",sessions:12}]},
-  {code:"S802200", name:"猛健樂（5mg）+ 頂級抗老點滴（10+2）", price:54000, group:"頂級抗老系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:4},{code:"S204010",name:"頂級抗老點滴",sessions:12}]},
-  {code:"S802201", name:"猛健樂（7.5mg）+ 頂級抗老點滴（10+2）", price:57000, group:"頂級抗老系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg/0.6ml）",sessions:4},{code:"S204010",name:"頂級抗老點滴",sessions:12}]},
-  {code:"S802202", name:"猛健樂（10mg）+ 頂級抗老點滴（10+2）", price:57000, group:"頂級抗老系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg/0.6ml）",sessions:4},{code:"S204010",name:"頂級抗老點滴",sessions:12}]},
-  {code:"S802127", name:"猛健樂(2.5mg)+Embody(2)", price:14999, group:"EMBODY系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:2}]},
-  {code:"S802128", name:"猛健樂(5mg)+Embody(2)", price:15999, group:"EMBODY系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:2}]},
-  {code:"S802129", name:"猛健樂(7.5mg)+Embody(2)", price:19999, group:"EMBODY系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:2}]},
-  {code:"S802130", name:"猛健樂(10mg)+Embody(2)", price:19999, group:"EMBODY系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:2}]},
-  {code:"S802166", name:"猛健樂（2.5mg）+EMBODY（12）", price:22333, group:"EMBODY系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:12}]},
-  {code:"S802167", name:"猛健樂（5mg）+EMBODY（12）", price:22333, group:"EMBODY系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:12}]},
-  {code:"S802168", name:"猛健樂（7.5mg）+EMBODY（12）", price:25333, group:"EMBODY系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:12}]},
-  {code:"S802169", name:"猛健樂（10mg）+EMBODY（12）", price:25333, group:"EMBODY系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:12}]},
-  {code:"S802170", name:"猛健樂（2.5mg）+EMBODY（36）", price:38999, group:"EMBODY系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:36}]},
-  {code:"S802171", name:"猛健樂（5mg）+EMBODY（36）", price:38999, group:"EMBODY系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:36}]},
-  {code:"S802172", name:"猛健樂（7.5mg）+EMBODY（36）", price:41999, group:"EMBODY系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:36}]},
-  {code:"S802173", name:"猛健樂（10mg）+EMBODY（36）", price:41999, group:"EMBODY系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:36}]},
-  {code:"S802174", name:"猛健樂（2.5mg）+鳳凰身體電波", price:108999, group:"鳳凰電波系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S101002",name:"鳳凰身體電波500",sessions:1}]},
-  {code:"S802175", name:"猛健樂（5mg）+鳳凰身體電波", price:108999, group:"鳳凰電波系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S101002",name:"鳳凰身體電波500",sessions:1}]},
-  {code:"S802176", name:"猛健樂（7.5mg）+鳳凰身體電波", price:111999, group:"鳳凰電波系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S101002",name:"鳳凰身體電波500",sessions:1}]},
-  {code:"S802177", name:"猛健樂（10mg）+鳳凰身體電波", price:111999, group:"鳳凰電波系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S101002",name:"鳳凰身體電波500",sessions:1}]},
-  {code:"S802179", name:"猛健樂（2.5mg）+ 健美燃脂點滴（10+3）", price:54000, group:"健美燃脂系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S204012",name:"健美燃脂點滴",sessions:13}]},
-  {code:"S802180", name:"猛健樂（5mg）+ 健美燃脂點滴（10+3）", price:54000, group:"健美燃脂系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S204012",name:"健美燃脂點滴",sessions:13}]},
-  {code:"S802181", name:"猛健樂（7.5mg）+ 健美燃脂點滴（10+3）", price:57000, group:"健美燃脂系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S204012",name:"健美燃脂點滴",sessions:13}]},
-  {code:"S802182", name:"猛健樂（10mg）+ 健美燃脂點滴（10+3）", price:57000, group:"健美燃脂系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S204012",name:"健美燃脂點滴",sessions:13}]},
-  {code:"S802155", name:"猛健樂(2.5mg)+EMBODY(4)+EMSCULPT NEO(4)", price:68999, group:"EMSCULPT NEO系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:4},{code:"S112017",name:"EMSCULPT NEO 熱磁減脂",sessions:4}]},
-  {code:"S802156", name:"猛健樂(5mg)+EMBODY(4)+EMSCULPT NEO(4)", price:68999, group:"EMSCULPT NEO系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:4},{code:"S112017",name:"EMSCULPT NEO 熱磁減脂",sessions:4}]},
-  {code:"S802157", name:"猛健樂(7.5mg)+EMBODY(4)+EMSCULPT NEO(4)", price:71999, group:"EMSCULPT NEO系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:4},{code:"S112017",name:"EMSCULPT NEO 熱磁減脂",sessions:4}]},
-  {code:"S802158", name:"猛健樂(10mg)+EMBODY(4)+EMSCULPT NEO(4)", price:71999, group:"EMSCULPT NEO系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S112015",name:"EMBODY核心美力",sessions:4},{code:"S112017",name:"EMSCULPT NEO 熱磁減脂",sessions:4}]},
-  {code:"S802147", name:"猛健樂（2.5mg）+ 倍克脂 / 5+1", price:89000, group:"倍克脂系列", limited:false, items:[{code:"S402004",name:"猛健樂（2.5mg）",sessions:4},{code:"S203001",name:"倍克脂 / 瓶",sessions:6}]},
-  {code:"S802148", name:"猛健樂（5mg）+ 倍克脂 / 5+1", price:89000, group:"倍克脂系列", limited:false, items:[{code:"S402005",name:"猛健樂（5mg）",sessions:4},{code:"S203001",name:"倍克脂 / 瓶",sessions:6}]},
-  {code:"S802149", name:"猛健樂（7.5mg）+ 倍克脂 / 5+1", price:92000, group:"倍克脂系列", limited:false, items:[{code:"S402006",name:"猛健樂（7.5mg）",sessions:4},{code:"S203001",name:"倍克脂 / 瓶",sessions:6}]},
-  {code:"S802150", name:"猛健樂（10mg）+ 倍克脂 / 5+1", price:92000, group:"倍克脂系列", limited:false, items:[{code:"S402007",name:"猛健樂（10mg）",sessions:4},{code:"S203001",name:"倍克脂 / 瓶",sessions:6}]},
-];
-
-const PACKAGES_DATA = [
-  {code:"S701126", name:"猛健樂（2.5mg / 5mg）任選1支", price:8888, limited:false, store:"守蔵", note:"展延至2026/12/31", items:[{code:"S402004",name:"猛健樂（2.5mg/0.6ml）",sessions:4},{code:"S402005",name:"猛健樂（5mg/0.6ml）",sessions:null}]},
-  {code:"S801443", name:"【2026年2月活動】女臉部雜毛除毛 / 優惠價", price:1299, limited:true, store:"守蔵", note:"展延至2026/12/31", items:[{code:"S114014",name:"女臉部雜毛除毛",sessions:1}]},
-  {code:"S801444", name:"【2026年2月活動】男臉部雜毛除毛 / 優惠價", price:1299, limited:true, store:"守蔵", note:"展延至2026/12/31", items:[{code:"S115014",name:"男臉部雜毛除毛",sessions:1}]},
-  {code:"S701041", name:"海菲秀 II / 經典+wishpro任選", price:3500, limited:false, store:"守蔵", note:"展延至2026/12/31", items:[{code:"S111010",name:"海菲秀 II / 經典",sessions:1},{code:"S117001",name:"wishpro（A/B任選）",sessions:1}]},
-  {code:"S801414", name:"身體電波", price:99999, limited:true, store:"守蔵", note:"展延至2026/12/31", items:[{code:"S101002",name:"鳳凰身體電波500",sessions:1}]},
-  {code:"S803020", name:"密羅木深層修護彈力霜（1+1）", price:3980, limited:false, store:"守蔵", note:"售完即下架", items:[{code:"S303009",name:"密羅木深層修護彈力霜",sessions:2}]},
-];
-
-const PROMO_DATA = [
-  {name:"舊客轉介【Neuronox】肉毒（動態一區）",
-   desc:"五區動態可累積成一區咀嚼；免單原因【舊客帶新客】",
-   period:"活動時間：04/01 – 06/30",
-   store:"守蔵"},
-];
-
-const STORAGE_DATA = [
-  {code:"2024PC20", name:"醫美療程儲值20萬 / 贈1萬（需店長審批）", unit:"儲值", price:200000},
-  {code:"2024PC30", name:"醫美療程儲值30萬 / 贈3萬（需店長審批）", unit:"儲值", price:300000},
-  {code:"2024PC50", name:"醫美療程儲值50萬 / 贈8萬（需店長審批）", unit:"儲值", price:500000},
-  {code:"2024PC100", name:"醫美療程儲值100萬 / 贈20萬（需店長審批）", unit:"儲值", price:1000000},
-  {code:"S702005", name:"儲值2萬 / 贈$1,000", unit:"卡", price:20000},
-  {code:"S702006", name:"儲值3萬 / 贈$3,000", unit:"卡", price:30000},
-  {code:"S702007", name:"儲值6萬 / 贈$9,000", unit:"卡", price:60000},
-  {code:"S702008", name:"儲值10萬 / 贈$20,000", unit:"卡", price:100000},
-];
-
-const PRODUCTS_DATA = {
-  "藍銅系列": [
-    {code:"S903001", name:"藍銅健髮液 1000ppm", unit:"盒", price:2200},
-    {code:"S903002", name:"藍銅健髮液 3000ppm", unit:"盒", price:3000},
-    {code:"S903003", name:"藍銅健髮噴霧 1000ppm", unit:"盒", price:2200},
-    {code:"S903004", name:"藍銅豐髮洗髮精", unit:"盒", price:980},
-  ],
-  "能量/機轉系列": [
-    {code:"S903005", name:"能量新生調理露 950ml", unit:"瓶", price:2600},
-    {code:"S903006", name:"機轉乾敏舒膚露 950ml", unit:"瓶", price:2600},
-    {code:"S903007", name:"機轉乾敏舒膚露 50ml", unit:"瓶", price:320},
-    {code:"S903008", name:"能量新生水分子滴管 100ml", unit:"瓶", price:2000},
-    {code:"S903009", name:"噴膚全效養護液 150ml", unit:"瓶", price:2000},
-    {code:"S903010", name:"Transform噴髮護理組", unit:"組", price:3500},
-  ],
-  "密羅木系列": [
-    {code:"S301008", name:"密羅木瞬潔新生角質凝露", unit:"瓶", price:1580},
-    {code:"S301009", name:"植物酵素拋光晶露", unit:"瓶", price:1580},
-    {code:"S301010", name:"雲朵泡泡洗顏慕斯", unit:"瓶", price:1280},
-    {code:"S302022", name:"密羅木經典修護晶露", unit:"瓶", price:3280},
-    {code:"S302023", name:"密羅木經典保濕噴霧", unit:"瓶", price:1280},
-    {code:"S303007", name:"密羅木經典舒敏潤膚乳", unit:"瓶", price:1980},
-    {code:"S303008", name:"密羅木經典保濕凝乳", unit:"瓶", price:2980},
-    {code:"S303009", name:"密羅木深層修護彈力霜", unit:"瓶", price:3980},
-    {code:"S304010", name:"經典保濕面膜 / 盒", unit:"盒", price:1580},
-    {code:"S304010-1", name:"經典保濕面膜/片", unit:"片", price:200},
-    {code:"S305005", name:"極緻抗陽全護防曬乳", unit:"瓶", price:1580},
-  ],
-};
-
-// ════════════════════════════════
-//  HELPERS
-// ════════════════════════════════
-const fmt = n => '$' + n.toLocaleString();
-
-function pkgCardHTML(p) {
-  const limitBanner = p.limited
-    ? `<div class="limit-warning"><span class="warn-icon">🚫</span>⚠️ 限購一組・不可扣儲值・不可轉贈</div>`
-    : '';
-  const itemsHTML = p.items.map(it => `
-    <div class="pkg-item-row">
-      <span class="pkg-item-code">${it.code}</span>
-      <span class="pkg-item-name">${it.name}</span>
-      ${it.sessions ? `<span class="pkg-item-sessions">${it.sessions}次</span>` : ''}
-    </div>`).join('');
-  const noteClass = p.note && p.note.includes('下架') ? 'pkg-note' : 'pkg-note expiry';
-  return `
-    <div class="pkg-card ${p.limited ? 'limited-pkg' : ''}">
-      ${limitBanner}
-      <div class="pkg-header">
-        <div style="flex:1;min-width:0">
-          <div class="pkg-name">${p.name}</div>
-          <div class="pkg-code">${p.code}${p.store ? ' · '+p.store : ''}</div>
-        </div>
-        <div class="pkg-price">${fmt(p.price)}</div>
-      </div>
-      <div class="pkg-items">${itemsHTML}</div>
-      ${p.note ? `<div class="pkg-footer"><span class="${noteClass}">📅 ${p.note}</span></div>` : ''}
-    </div>`;
+function pkgCard(p){
+  let b='';
+  if(p.limited) b+=`<div class="lban">🚫 ⚠️ 限購一組・不可扣儲值・不可轉贈</div>`;
+  else if(p.noStorage) b+=`<div class="nban">⛔ 不可扣儲值・不可轉贈</div>`;
+  if(p.warn) b+=`<div class="wban">⚠️ ${p.warn}</div>`;
+  const its=(p.items||[]).map(i=>`<div class="pirow"><span class="picode">${i.code}</span><span class="piname">${i.name}</span>${i.ses!=null?`<span class="pises">${i.ses}次</span>`:''}</div>`).join('');
+  const nc=p.note&&p.note.includes('下架')?'pnt out':'pnt';
+  return `<div class="pc ${p.limited?'lim':p.noStorage?'nos':''}">${b}<div class="ph"><div style="flex:1;min-width:0"><div class="pcode">${p.code}</div><div class="pname">${p.name}</div>${p.store?`<div class="pstore">🏪 ${p.store}</div>`:''}</div><div class="pprice">${fmt(p.price)}</div></div><div class="pit">${its}</div>${p.note?`<div class="pft"><span class="${nc}">📅 ${p.note}</span></div>`:''}</div>`;
 }
 
-// ════════════════════════════════
-//  ITEMS PANEL
-// ════════════════════════════════
-(function buildItems() {
-  const cats = Object.keys(ITEMS_DATA);
-  let activeCat = cats[0];
-  let activeSub = Object.keys(ITEMS_DATA[activeCat])[0];
-  const catBar = document.getElementById('itemsCatBar');
-  const subBar = document.getElementById('itemsSubBar');
-  const content = document.getElementById('itemsContent');
+function makeCB(el,keys,gA,sA,cb){
+  el.innerHTML=keys.map(k=>`<div class="cbtn ${k===gA()?'on':''}" data-k="${k}">${k}</div>`).join('');
+  el.querySelectorAll('.cbtn').forEach(b=>b.addEventListener('click',()=>{sA(b.dataset.k);makeCB(el,keys,gA,sA,cb);cb();}));
+}
 
-  function renderCats() {
-    catBar.innerHTML = cats.map(c =>
-      `<div class="cat-btn ${c===activeCat?'active':''}" data-cat="${c}">${c}</div>`
-    ).join('');
-    catBar.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', () => {
-      activeCat = b.dataset.cat;
-      activeSub = Object.keys(ITEMS_DATA[activeCat])[0];
-      renderCats(); renderSubs(); renderRows();
-    }));
+// ① 項目
+(function(){
+  const cats=Object.keys(ITEMS);
+  let aC=cats[0],aS=Object.keys(ITEMS[aC])[0];
+  function rS(){
+    $('iSB').innerHTML=Object.keys(ITEMS[aC]).map(s=>`<div class="sbtnn ${s===aS?'on':''}" data-s="${s}">${s}</div>`).join('');
+    $('iSB').querySelectorAll('.sbtnn').forEach(b=>b.addEventListener('click',()=>{aS=b.dataset.s;rS();rR();}));
   }
-
-  function renderSubs() {
-    const subs = Object.keys(ITEMS_DATA[activeCat]);
-    subBar.innerHTML = subs.map(s =>
-      `<div class="subcat-btn ${s===activeSub?'active':''}" data-sub="${s}">${s}</div>`
-    ).join('');
-    subBar.querySelectorAll('.subcat-btn').forEach(b => b.addEventListener('click', () => {
-      activeSub = b.dataset.sub;
-      renderSubs(); renderRows();
-    }));
+  function rR(){
+    $('iC').innerHTML=ITEMS[aC][aS].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div><div class="imeta"><span class="stag">${r.store||'守蔵'}</span></div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`).join('');
   }
-
-  function renderRows() {
-    const rows = ITEMS_DATA[activeCat][activeSub];
-    content.innerHTML = rows.map(r => `
-      <div class="item-row">
-        <div class="item-info">
-          <div class="item-name">${r.name}</div>
-          <div class="item-meta">
-            <span class="item-code">${r.code}</span>
-            <span class="store-tag">${r.store||'守蔵'}</span>
-          </div>
-        </div>
-        <div class="item-right">
-          <div class="item-price">${fmt(r.price)}</div>
-          <span class="item-unit">${r.unit}</span>
-        </div>
-      </div>`).join('');
-  }
-
-  renderCats(); renderSubs(); renderRows();
+  makeCB($('iCB'),cats,()=>aC,k=>{aC=k;aS=Object.keys(ITEMS[k])[0];},()=>{rS();rR();});
+  rS();rR();
 })();
 
-// ════════════════════════════════
-//  PACKAGES PANEL
-// ════════════════════════════════
-(function buildPackages() {
-  const content = document.getElementById('packagesContent');
-  content.innerHTML = `
-    <div class="section-heading">守蔵 115年度檔期套組</div>
-    ${PACKAGES_DATA.map(pkgCardHTML).join('')}`;
+// ② 常態套組
+(function(){
+  const cats=Object.keys(PACKAGES);let aC=cats[0];
+  makeCB($('pkgCB'),cats,()=>aC,k=>{aC=k;},()=>{$('pkgC').innerHTML=PACKAGES[aC].map(pkgCard).join('');});
+  $('pkgC').innerHTML=PACKAGES[aC].map(pkgCard).join('');
 })();
 
-// ════════════════════════════════
-//  MJL PANEL
-// ════════════════════════════════
-(function buildMJL() {
-  const groups = [...new Set(MJL_PACKAGES.map(p => p.group))];
-  let activeGroup = groups[0];
-  const catBar = document.getElementById('mjlCatBar');
-  const content = document.getElementById('mjlContent');
-
-  function renderCats() {
-    catBar.innerHTML = groups.map(g =>
-      `<div class="cat-btn ${g===activeGroup?'active':''}" data-g="${g}">${g}</div>`
-    ).join('');
-    catBar.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', () => {
-      activeGroup = b.dataset.g; renderCats(); renderCards();
-    }));
-  }
-
-  function renderCards() {
-    const pkgs = MJL_PACKAGES.filter(p => p.group === activeGroup);
-    content.innerHTML = pkgs.map(pkgCardHTML).join('');
-  }
-
-  renderCats(); renderCards();
+// ③ 猛健樂
+(function(){
+  const cats=Object.keys(MJL);let aC=cats[0];
+  function rC(){$('mjlC').innerHTML=MJL[aC].map(p=>pkgCard({...p,limited:false,noStorage:false,store:'守蔵',note:'',warn:''})).join('');}
+  makeCB($('mjlCB'),cats,()=>aC,k=>{aC=k;},rC);rC();
 })();
 
-// ════════════════════════════════
-//  PROMO PANEL
-// ════════════════════════════════
-(function buildPromo() {
-  const content = document.getElementById('promoContent');
-  content.innerHTML = `
-    <div class="section-heading">當月活動優惠 · 2026/05</div>
-    ${PROMO_DATA.map(p => `
-      <div class="promo-card">
-        <div class="promo-title">🎁 ${p.name}</div>
-        <div class="promo-desc">${p.desc}</div>
-        <div class="promo-period">⏰ ${p.period}</div>
-      </div>`).join('')}
-    <div class="empty-state" style="padding:20px 20px 10px;text-align:left;font-size:13px;color:var(--text-dim)">
-      ★ 舊客轉介：五區動態可累積成一區咀嚼<br>免單原因須為【舊客帶新客】<br>活動時間：2026/04/01 – 06/30
-    </div>`;
+// ④ 檔期/活動
+(function(){
+  let h='<div class="sh">115年度檔期套組</div>';
+  h+=PROMO_PKGS.map(pkgCard).join('');
+  h+='<div class="sh" style="margin-top:10px">當月活動公告</div>';
+  h+=PROMO_ACTIVITIES.map(a=>`<div class="prc"><div class="prt">🎁 ${a.name}</div><div class="prd">${a.desc}</div><div class="prp">⏰ ${a.period}</div></div>`).join('');
+  $('proC').innerHTML=h;
 })();
 
-// ════════════════════════════════
-//  STORAGE PANEL
-// ════════════════════════════════
-(function buildStorage() {
-  const content = document.getElementById('storageContent');
-  content.innerHTML = `
-    <div class="storage-note">
-      ✅ 項目、卡項、全套組可扣（特殊套組不可扣時會標註）<br>
-      ✅ 儲值金額完款後，後贈金額才會產生<br>
-      ✅ 後贈金額僅能扣項目原價（體驗價不適用）<br>
-      ✅ 以上方案不分現金、刷卡及中租
-    </div>
-    ${STORAGE_DATA.map(s => `
-      <div class="storage-card">
-        <div>
-          <div class="sc-name">${s.name}</div>
-          <div class="sc-code">${s.code} · ${s.unit}</div>
-        </div>
-        <div class="sc-price">${fmt(s.price)}</div>
-      </div>`).join('')}`;
+// ⑤ 儲值
+(function(){
+  $('stC').innerHTML=`<div class="stnote">✅ 項目、卡項、全套組可扣（特殊套組不可扣時會標註）<br>✅ 儲值金額完款後，後贈金額才會產生<br>✅ 後贈金額僅能扣項目原價（體驗價不適用）<br>✅ 以上方案不分現金、刷卡及中租</div>`
+    +STORAGE.map(s=>`<div class="stcard"><div><div class="scname">${s.name}</div><div class="sccode">${s.code} · ${s.unit}</div></div><div class="scprice">${fmt(s.price)}</div></div>`).join('');
 })();
 
-// ════════════════════════════════
-//  PRODUCTS PANEL
-// ════════════════════════════════
-(function buildProducts() {
-  const groups = Object.keys(PRODUCTS_DATA);
-  let activeGroup = groups[0];
-  const catBar = document.getElementById('prodCatBar');
-  const content = document.getElementById('prodContent');
-
-  function renderCats() {
-    catBar.innerHTML = groups.map(g =>
-      `<div class="cat-btn ${g===activeGroup?'active':''}" data-g="${g}">${g}</div>`
-    ).join('');
-    catBar.querySelectorAll('.cat-btn').forEach(b => b.addEventListener('click', () => {
-      activeGroup = b.dataset.g; renderCats(); renderRows();
-    }));
-  }
-
-  function renderRows() {
-    const items = PRODUCTS_DATA[activeGroup];
-    const icons = {"藍銅系列":"💧","能量/機轉系列":"✨","密羅木系列":"🌿"};
-    content.innerHTML = items.map(r => `
-      <div class="item-row">
-        <div class="product-icon">${icons[activeGroup]||'🧴'}</div>
-        <div class="item-info">
-          <div class="item-name">${r.name}</div>
-          <div class="item-meta item-code">${r.code}</div>
-        </div>
-        <div class="item-right">
-          <div class="item-price">${fmt(r.price)}</div>
-          <span class="item-unit">${r.unit}</span>
-        </div>
-      </div>`).join('');
-  }
-
-  renderCats(); renderRows();
+// ⑥ 產品
+(function(){
+  const cats=Object.keys(PRODUCTS);let aC=cats[0];
+  function rR(){$('proC2').innerHTML=PRODUCTS[aC].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`).join('');}
+  makeCB($('proCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
 })();
 
-// ════════════════════════════════
-//  BOTTOM TAB SWITCHING
-// ════════════════════════════════
-document.querySelectorAll('.btab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.btab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const panelId = 'panel-' + tab.dataset.panel;
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === panelId));
-  });
-});
+// Tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');
+  const id='pn-'+t.dataset.p;
+  document.querySelectorAll('.pn').forEach(p=>p.classList.toggle('on',p.id===id));
+}));
 
-// ════════════════════════════════
-//  SEARCH
-// ════════════════════════════════
-// Build flat search index
-const searchIndex = [];
-Object.entries(ITEMS_DATA).forEach(([cat, subs]) => {
-  Object.entries(subs).forEach(([sub, rows]) => {
-    rows.forEach(r => searchIndex.push({
-      type:'item', cat, sub,
-      name:r.name, code:r.code, price:r.price, unit:r.unit, store:r.store||'守蔵',
-      text:(r.name+r.code).toLowerCase()
-    }));
-  });
-});
-[...MJL_PACKAGES, ...PACKAGES_DATA].forEach(p => {
-  searchIndex.push({
-    type:'pkg', limited:p.limited,
-    name:p.name, code:p.code, price:p.price,
-    text:(p.name+p.code).toLowerCase()
-  });
-});
-STORAGE_DATA.forEach(s => {
-  searchIndex.push({type:'storage', name:s.name, code:s.code, price:s.price, unit:s.unit, text:(s.name+s.code).toLowerCase()});
-});
-Object.values(PRODUCTS_DATA).flat().forEach(r => {
-  searchIndex.push({type:'product', name:r.name, code:r.code, price:r.price, unit:r.unit, text:(r.name+r.code).toLowerCase()});
-});
+// 搜尋索引
+const IDX=[];
+Object.entries(ITEMS).forEach(([cat,subs])=>Object.entries(subs).forEach(([sub,rows])=>rows.forEach(r=>IDX.push({type:'項目',cat,sub,limited:false,noStorage:false,code:r.code,name:r.name,price:r.price,unit:r.unit,store:r.store||'守蔵',txt:(r.name+r.code).toLowerCase()}))));
+Object.entries(PACKAGES).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'常態套組',cat,limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()})));
+Object.entries(MJL).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'猛健樂',cat,limited:false,noStorage:false,code:p.code,name:p.name,price:p.price,store:'守蔵',txt:(p.name+p.code).toLowerCase()})));
+PROMO_PKGS.forEach(p=>IDX.push({type:'檔期',limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()}));
+STORAGE.forEach(s=>IDX.push({type:'儲值',limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()}));
+Object.values(PRODUCTS).flat().forEach(r=>IDX.push({type:'產品',limited:false,noStorage:false,code:r.code,name:r.name,price:r.price,unit:r.unit,txt:(r.name+r.code).toLowerCase()}));
 
-document.getElementById('openSearch').addEventListener('click', () => {
-  document.getElementById('searchOverlay').classList.add('open');
-  setTimeout(() => document.getElementById('searchInput').focus(), 100);
-});
-document.getElementById('closeSearch').addEventListener('click', () => {
-  document.getElementById('searchOverlay').classList.remove('open');
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '<div class="search-empty">輸入關鍵字開始搜尋</div>';
-});
-
-document.getElementById('searchInput').addEventListener('input', function() {
-  const q = this.value.trim().toLowerCase();
-  const res = document.getElementById('searchResults');
-  if (!q) { res.innerHTML = '<div class="search-empty">輸入關鍵字開始搜尋</div>'; return; }
-  const hits = searchIndex.filter(x => x.text.includes(q)).slice(0, 40);
-  if (!hits.length) { res.innerHTML = '<div class="search-empty">找不到相關項目</div>'; return; }
-  res.innerHTML = hits.map(h => {
-    const typeBadge = h.type==='pkg' ? (h.limited
-      ? `<span style="color:var(--red);font-weight:800">🚫 限購一組</span>` : '套組')
-      : h.type==='storage' ? '儲值' : h.type==='product' ? '產品' : `${h.cat} › ${h.sub}`;
-    return `<div class="search-result-item">
-      <div><span class="sri-price">${fmt(h.price)}</span>
-      <div class="sri-name">${h.name}</div></div>
-      <div class="sri-meta">${h.code} · ${typeBadge}${h.unit?' · '+h.unit:''}</div>
-    </div>`;
+$('openS').addEventListener('click',()=>{$('sov').classList.add('open');setTimeout(()=>$('si').focus(),100);});
+$('cls').addEventListener('click',()=>{$('sov').classList.remove('open');$('si').value='';$('sres').innerHTML='<div class="sempty">輸入 S編號 或 關鍵字開始搜尋</div>';});
+$('si').addEventListener('input',function(){
+  const q=this.value.trim().toLowerCase();
+  if(!q){$('sres').innerHTML='<div class="sempty">輸入 S編號 或 關鍵字開始搜尋</div>';return;}
+  const hits=IDX.filter(x=>x.txt.includes(q)).slice(0,60);
+  if(!hits.length){$('sres').innerHTML='<div class="sempty">找不到相關項目</div>';return;}
+  $('sres').innerHTML=hits.map(h=>{
+    let w='';
+    if(h.limited) w='<span style="color:var(--red);font-weight:900;font-size:12px">🚫限購一組 </span>';
+    else if(h.noStorage) w='<span style="color:#e09040;font-weight:700;font-size:12px">⛔不可扣儲值 </span>';
+    return `<div class="sri"><div class="sri-t"><span class="scode">${h.code}</span><span class="sprice">${fmt(h.price)}</span></div><div class="sname">${w}${h.name}</div><div class="smeta">${[h.type,h.cat,h.unit,h.store].filter(Boolean).join(' · ')}</div></div>`;
   }).join('');
 });
 </script>
