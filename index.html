@@ -8,7 +8,7 @@
 <!-- ★ 每月只換 data.js，這個檔案永遠不用動 ★ -->
 <script src="data.js"></script>
 <style>
-:root{--gold:#c9a84c;--gl:#e8cc7a;--dark:#0f1117;--d2:#181b23;--d3:#1f2330;--bd:rgba(201,168,76,.22);--txt:#f0ece2;--dim:#8a8680;--red:#e05050;--grn:#4eaa7a;--blu:#5a80c0;--org:#e07a50;--HD:62px;--TAB:58px;}
+:root{--gold:#c9a84c;--gl:#e8cc7a;--dark:#0f1117;--d2:#181b23;--d3:#1f2330;--bd:rgba(201,168,76,.22);--txt:#f0ece2;--dim:#8a8680;--red:#e05050;--grn:#4eaa7a;--blu:#5a80c0;--org:#e07a50;--HD:62px;--TAB:72px;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-serif;}
@@ -25,14 +25,14 @@ body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-ser
 .sres{flex:1;overflow-y:auto;margin-top:12px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent;}
 .sri{padding:14px 4px;border-bottom:1px solid rgba(255,255,255,.06);}
 .sri-t{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;}
-.scode{font-family:monospace;font-size:16px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);padding:3px 9px;border-radius:6px;flex-shrink:0;}
+.scode{font-family:monospace;font-size:18px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.25);padding:4px 10px;border-radius:6px;flex-shrink:0;}
 .sprice{font-size:19px;font-weight:900;color:var(--gold);flex-shrink:0;}
 .sname{font-size:15px;color:var(--txt);font-weight:500;line-height:1.4;}
 .smeta{font-size:11px;color:var(--dim);margin-top:3px;}
 .sempty{padding:40px;text-align:center;color:var(--dim);font-size:15px;}
 .tabs{position:fixed;bottom:0;left:0;right:0;z-index:200;height:var(--TAB);background:#0a0c12;border-top:1px solid var(--bd);display:flex;}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--dim);font-size:9.5px;font-weight:600;border-top:2px solid transparent;}
-.tab .ic{font-size:18px;line-height:1;}.tab.on{color:var(--gold);border-top-color:var(--gold);}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--dim);font-size:11px;font-weight:700;border-top:2px solid transparent;}
+.tab .ic{font-size:24px;line-height:1;}.tab.on{color:var(--gold);border-top-color:var(--gold);}
 .ca{position:fixed;top:var(--HD);bottom:var(--TAB);left:0;right:0;overflow:hidden;}
 .pn{display:none;flex-direction:column;height:100%;}.pn.on{display:flex;}
 .cb{background:var(--d2);border-bottom:1px solid var(--bd);display:flex;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
@@ -47,7 +47,7 @@ body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-ser
 .sc::-webkit-scrollbar{width:4px;}.sc::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
 .ir{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05);gap:10px;}
 .ir:active{background:rgba(201,168,76,.05);}.ii{flex:1;min-width:0;}
-.icode{display:inline-block;font-family:monospace;font-size:15px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.22);border-radius:6px;padding:3px 9px;margin-bottom:5px;letter-spacing:.5px;}
+.icode{display:inline-block;font-family:monospace;font-size:17px;font-weight:900;color:var(--gl);background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.22);border-radius:6px;padding:4px 10px;margin-bottom:6px;letter-spacing:.5px;}
 .iname{font-size:15px;color:var(--txt);line-height:1.4;font-weight:500;}.imeta{font-size:11px;color:var(--dim);margin-top:3px;}
 .irg{text-align:right;flex-shrink:0;}.iprice{font-size:18px;font-weight:900;color:var(--gl);}.iunit{font-size:11px;color:var(--dim);display:block;}
 .stag{display:inline-block;font-size:10px;padding:1px 5px;border-radius:4px;background:rgba(90,128,192,.15);color:var(--blu);border:1px solid rgba(90,128,192,.2);margin-left:4px;}
