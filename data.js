@@ -616,7 +616,7 @@ const STORAGE = [
 ];
 
 // ════════════════════════════════
-// 六、產品類
+// 六、產品類（如此蔚藍－藍底色項目）
 // ════════════════════════════════
 const PRODUCTS = {
   "密羅木系列": [
@@ -631,19 +631,5 @@ const PRODUCTS = {
     { code:"S304010",   name:"經典保濕面膜／盒",         unit:"盒", price:1580 },
     { code:"S304010-1", name:"經典保濕面膜／片",         unit:"片", price:200  },
     { code:"S305005",   name:"極緻抗陽全護防曬乳",       unit:"瓶", price:1580 },
-  ],
-  "藍銅系列": [
-    { code:"S903001", name:"藍銅健髮液 1000ppm",   unit:"盒", price:2200 },
-    { code:"S903002", name:"藍銅健髮液 3000ppm",   unit:"盒", price:3000 },
-    { code:"S903003", name:"藍銅健髮噴霧 1000ppm", unit:"盒", price:2200 },
-    { code:"S903004", name:"藍銅豐髮洗髮精",        unit:"盒", price:980  },
-  ],
-  "能量／機轉系列": [
-    { code:"S903005", name:"能量新生調理露 950ml",        unit:"瓶", price:2600 },
-    { code:"S903006", name:"機轉乾敏舒膚露 950ml",        unit:"瓶", price:2600 },
-    { code:"S903007", name:"機轉乾敏舒膚露 50ml",         unit:"瓶", price:320  },
-    { code:"S903008", name:"能量新生水分子滴管 100ml",     unit:"瓶", price:2000 },
-    { code:"S903009", name:"喚膚全效養護液 150ml",        unit:"瓶", price:2000 },
-    { code:"S903010", name:"Transform喚髮護理組",         unit:"組", price:3500 },
   ],
 };
