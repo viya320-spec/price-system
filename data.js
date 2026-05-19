@@ -326,6 +326,15 @@ const ITEMS = {
 // noStorage:true → ⛔ 不可扣儲值
 // warn → 特殊注意事項文字
 const PACKAGES = {
+  "電音波套組": [
+    { code:"S801433", name:"鳳凰電波紫鑽900+音波（100）+皮秒（1）", price:140000, limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S101001",name:"鳳凰電波紫鑽900",ses:1},{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100},{code:"S102025",name:"皮秒PRO／全臉",ses:1}] },
+    { code:"S801421", name:"無雙電波（臉）1000＋MPT100贈",           price:99999,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S125004",name:"無雙電波-雅典娜（臉）單發",ses:1000},{code:"S103022",name:"海芙音波(MPT媚必提) 贈",ses:100}] },
+    { code:"S801422", name:"無雙電波（眼）600＋MPT100贈",            price:66000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S125003",name:"無雙電波-愛神（眼）單發",ses:600},{code:"S103022",name:"海芙音波(MPT媚必提) 贈",ses:100}] },
+    { code:"S801158", name:"海芙音波(MPT媚必提)100條",               price:9999,   limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100}] },
+    { code:"S801159", name:"海芙音波(MPT媚必提)1000條",              price:89999,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:1000}] },
+    { code:"S801160", name:"海芙音波(MPT媚必提)2000條",              price:160000, limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:2000}] },
+    { code:"S801372", name:"MPT音波100發+肉毒咀嚼(N)",               price:7999,   limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100},{code:"S201025",name:"Neuronox肉毒／咀嚼肌",ses:1}] },
+  ],
   "海菲秀／wishpro": [
     { code:"S801080", name:"海菲秀II（5+1）",              price:33000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"",
       items:[{code:"S111010",name:"海菲秀II／經典",ses:6}] },
@@ -423,15 +432,6 @@ const PACKAGES = {
       items:[{code:"S205011",name:"美特拉／(條)",ses:2}] },
     { code:"S801197", name:"美特拉／臉",                 price:39999, limited:false, noStorage:false, store:"守蔵", note:"", warn:"",
       items:[{code:"S205011",name:"美特拉／(條)",ses:4}] },
-  ],
-  "電音波套組": [
-    { code:"S801433", name:"鳳凰電波紫鑽900+音波（100）+皮秒（1）", price:140000, limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S101001",name:"鳳凰電波紫鑽900",ses:1},{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100},{code:"S102025",name:"皮秒PRO／全臉",ses:1}] },
-    { code:"S801421", name:"無雙電波（臉）1000＋MPT100贈",           price:99999,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S125004",name:"無雙電波-雅典娜（臉）單發",ses:1000},{code:"S103022",name:"海芙音波(MPT媚必提) 贈",ses:100}] },
-    { code:"S801422", name:"無雙電波（眼）600＋MPT100贈",            price:66000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S125003",name:"無雙電波-愛神（眼）單發",ses:600},{code:"S103022",name:"海芙音波(MPT媚必提) 贈",ses:100}] },
-    { code:"S801158", name:"海芙音波(MPT媚必提)100條",               price:9999,   limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100}] },
-    { code:"S801159", name:"海芙音波(MPT媚必提)1000條",              price:89999,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:1000}] },
-    { code:"S801160", name:"海芙音波(MPT媚必提)2000條",              price:160000, limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:2000}] },
-    { code:"S801372", name:"MPT音波100發+肉毒咀嚼(N)",               price:7999,   limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S103022",name:"海芙音波(MPT媚必提)",ses:100},{code:"S201025",name:"Neuronox肉毒／咀嚼肌",ses:1}] },
   ],
   "雷射套組": [
     { code:"S801079", name:"心動光(飛梭)／全臉（2+1）",              price:30000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S118004",name:"心動光(飛梭)／全臉",ses:3}] },
