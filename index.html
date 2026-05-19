@@ -100,6 +100,7 @@ body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-ser
   <div class="pn" id="pn-promo"><div class="sc" id="proC"></div></div>
   <div class="pn" id="pn-storage"><div class="sc" id="stC"></div></div>
   <div class="pn" id="pn-products"><div class="cb" id="proCB"></div><div class="sc" id="proC2"></div></div>
+  <div class="pn" id="pn-trial"><div class="cb" id="trialCB"></div><div class="sc" id="trialC"></div></div>
 </div>
 
 <div class="tabs">
@@ -109,6 +110,7 @@ body{background:var(--dark);color:var(--txt);font-family:'Noto Sans TC',sans-ser
   <div class="tab" data-p="promo"><span class="ic">⭐</span>檔期/活動</div>
   <div class="tab" data-p="storage"><span class="ic">💳</span>儲值</div>
   <div class="tab" data-p="products"><span class="ic">🧴</span>產品</div>
+  <div class="tab" data-p="trial"><span class="ic">🎫</span>體驗價</div>
 </div>
 
 <script>
@@ -182,6 +184,13 @@ function makeCB(el,keys,gA,sA,cb){
   makeCB($('proCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
 })();
 
+// ⑦ 體驗價
+(function(){
+  const cats=Object.keys(TRIAL);let aC=cats[0];
+  function rR(){$('trialC').innerHTML=TRIAL[aC].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div><div class="imeta"><span class="stag">${r.store||'守蔵'}</span>${r.warn?`<span style="color:#e09040;font-size:11px;margin-left:6px">⛔ ${r.warn}</span>`:''}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit||'次'}</span></div></div>`).join('');}
+  makeCB($('trialCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
+})();
+
 // Tabs
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
@@ -198,6 +207,7 @@ Object.entries(MJL).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'猛健
 PROMO_PKGS.forEach(p=>IDX.push({type:'檔期',limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()}));
 STORAGE.forEach(s=>IDX.push({type:'儲值',limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()}));
 Object.values(PRODUCTS).flat().forEach(r=>IDX.push({type:'產品',limited:false,noStorage:false,code:r.code,name:r.name,price:r.price,unit:r.unit,txt:(r.name+r.code).toLowerCase()}));
+Object.entries(TRIAL).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'體驗價',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'次',store:r.store||'守蔵',txt:(r.name+r.code).toLowerCase()})));
 
 $('openS').addEventListener('click',()=>{$('sov').classList.add('open');setTimeout(()=>$('si').focus(),100);});
 $('cls').addEventListener('click',()=>{$('sov').classList.remove('open');$('si').value='';$('sres').innerHTML='<div class="sempty">輸入 S編號 或 關鍵字開始搜尋</div>';});
