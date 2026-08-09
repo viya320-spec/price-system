@@ -124,6 +124,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif
 
 /* Font-size toggle (accessibility for presbyopia) */
 .fsbtn{width:46px;height:46px;flex-shrink:0;background:var(--panel2);border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:var(--gold);cursor:pointer;}
+.favstar{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;font-size:20px;cursor:pointer;flex-shrink:0;color:#d8d0ba;user-select:none;}
+.favstar.on{color:var(--red);}
+.customEmpty{padding:60px 24px;text-align:center;color:var(--dim);font-size:15px;line-height:1.9;}
+.customEmpty b{color:var(--gold);}
 body.big .iname,body.big .pname,body.big .piname,body.big .sname{font-size:120%!important;}
 body.big .iprice,body.big .pprice,body.big .scprice,body.big .sprice{font-size:115%!important;}
 body.big .icode,body.big .pcode,body.big .scode{font-size:110%!important;}
@@ -148,6 +152,7 @@ body.big .icode,body.big .pcode,body.big .scode{font-size:110%!important;}
 </div>
 
 <div class="ca">
+  <div class="pn" id="pn-custom"><div class="sc" id="customC"></div></div>
   <div class="pn on" id="pn-items"><div class="cb" id="iCB"></div><div class="sb" id="iSB"></div><div class="sc" id="iC"></div></div>
   <div class="pn" id="pn-pkg"><div class="cb" id="pkgCB"></div><div class="sc" id="pkgC"></div></div>
   <div class="pn" id="pn-mjl"><div class="cb" id="mjlCB"></div><div class="sc" id="mjlC"></div></div>
@@ -158,10 +163,11 @@ body.big .icode,body.big .pcode,body.big .scode{font-size:110%!important;}
 </div>
 
 <div class="tabs">
+  <div class="tab" data-p="custom"><span class="ic">❤️</span>自訂販售</div>
   <div class="tab on" data-p="items"><span class="ic">📋</span>項目</div>
   <div class="tab" data-p="pkg"><span class="ic">🗂</span>常態套組</div>
   <div class="tab" data-p="mjl"><span class="ic">💉</span>猛健樂</div>
-  <div class="tab" data-p="promo"><span class="ic">⭐</span>檔期/活動</div>
+  <div class="tab" data-p="promo"><span class="ic">🎁</span>檔期/活動</div>
   <div class="tab" data-p="storage"><span class="ic">💳</span>儲值</div>
   <div class="tab" data-p="products"><span class="ic">🧴</span>產品</div>
   <div class="tab" data-p="trial"><span class="ic">🎫</span>體驗價</div>
@@ -172,6 +178,32 @@ const fmt=n=>n!=null?'$'+n.toLocaleString():'依開單';
 const $=id=>document.getElementById(id);
 $('ver').textContent='醫美價目表 '+DATA_VERSION;
 
+// ── 自訂販售（收藏）功能：存在使用者自己手機的瀏覽器裡，不同人不會互相干擾 ──
+const FAV_KEY='soazur_fav_codes';
+function getFavs(){ try{ return JSON.parse(localStorage.getItem(FAV_KEY)||'[]'); }catch(e){ return []; } }
+function isFav(code){ return getFavs().includes(code); }
+function toggleFav(code){
+  let favs=getFavs();
+  favs = favs.includes(code) ? favs.filter(c=>c!==code) : [...favs, code];
+  try{ localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }catch(e){}
+  document.querySelectorAll(`.favstar[data-code="${CSS.escape(code)}"]`).forEach(el=>{
+    const on = favs.includes(code);
+    el.classList.toggle('on', on);
+    el.textContent = on ? '♥' : '♡';
+  });
+  if(document.getElementById('pn-custom').classList.contains('on')) renderCustom();
+}
+function favBtn(code){ return `<span class="favstar ${isFav(code)?'on':''}" data-code="${code}" title="加入／移除 自訂販售">${isFav(code)?'♥':'♡'}</span>`; }
+document.addEventListener('click', e=>{
+  const star=e.target.closest('.favstar');
+  if(star) toggleFav(star.dataset.code);
+});
+
+// 共用：一般項目列（項目／產品單品／體驗價都用這個樣板）
+function itemRow(r){
+  return `<div class="ir">${favBtn(r.code)}<div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div><div class="imeta"><span class="stag">${r.store||'守蔵'}</span>${r.warn?`<span style="color:var(--org);font-size:12px;margin-left:6px;font-weight:700">⛔ ${r.warn}</span>`:''}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit||''}</span></div></div>`;
+}
+
 function pkgCard(p){
   let b='';
   if(p.limited) b+=`<div class="lban">🚫 限購一組・不可扣儲值・不可轉贈</div>`;
@@ -179,7 +211,7 @@ function pkgCard(p){
   if(p.warn) b+=`<div class="wban">⚠️ ${p.warn}</div>`;
   const its=(p.items||[]).map(i=>`<div class="pirow"><span class="picode">${i.code}</span><span class="piname">${i.name}</span>${i.ses!=null?`<span class="pises">${i.ses}次</span>`:''}</div>`).join('');
   const nc=p.note&&p.note.includes('下架')?'pnt out':'pnt';
-  return `<div class="pc ${p.limited?'lim':p.noStorage?'nos':''}">${b}<div class="ph"><div style="flex:1;min-width:0"><div class="pcode">${p.code}</div><div class="pname">${p.name}</div>${p.store?`<div class="pstore">🏪 ${p.store}</div>`:''}</div><div class="pprice">${fmt(p.price)}</div></div><div class="pit">${its}</div>${p.note?`<div class="pft"><span class="${nc}">📅 ${p.note}</span></div>`:''}</div>`;
+  return `<div class="pc ${p.limited?'lim':p.noStorage?'nos':''}">${b}<div class="ph">${favBtn(p.code)}<div style="flex:1;min-width:0"><div class="pcode">${p.code}</div><div class="pname">${p.name}</div>${p.store?`<div class="pstore">🏪 ${p.store}</div>`:''}</div><div class="pprice">${fmt(p.price)}</div></div><div class="pit">${its}</div>${p.note?`<div class="pft"><span class="${nc}">📅 ${p.note}</span></div>`:''}</div>`;
 }
 
 function makeCB(el,keys,gA,sA,cb){
@@ -196,7 +228,7 @@ function makeCB(el,keys,gA,sA,cb){
     $('iSB').querySelectorAll('.sbtnn').forEach(b=>b.addEventListener('click',()=>{aS=b.dataset.s;rS();rR();}));
   }
   function rR(){
-    $('iC').innerHTML=ITEMS[aC][aS].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div><div class="imeta"><span class="stag">${r.store||'守蔵'}</span></div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`).join('');
+    $('iC').innerHTML=ITEMS[aC][aS].map(itemRow).join('');
   }
   makeCB($('iCB'),cats,()=>aC,k=>{aC=k;aS=Object.keys(ITEMS[k])[0];},()=>{rS();rR();});
   rS();rR();
@@ -243,7 +275,7 @@ function makeCB(el,keys,gA,sA,cb){
     const rows=PRODUCTS[aC][aS];
     $('proC2').innerHTML=rows.map(r=>{
       if(r.items) return pkgCard(r); // 套組優惠：用套組卡片呈現（含品項明細、警示）
-      return `<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`;
+      return itemRow(r);
     }).join('');
   }
   makeCB($('proCB'),cats,()=>aC,k=>{aC=k;aS=Object.keys(PRODUCTS[k])[0];},()=>{rS();rR();});
@@ -253,7 +285,7 @@ function makeCB(el,keys,gA,sA,cb){
 // ⑦ 體驗價
 (function(){
   const cats=Object.keys(TRIAL);let aC=cats[0];
-  function rR(){$('trialC').innerHTML=TRIAL[aC].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div><div class="imeta"><span class="stag">${r.store||'守蔵'}</span>${r.warn?`<span style="color:var(--org);font-size:12px;margin-left:6px;font-weight:700">⛔ ${r.warn}</span>`:''}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit||'次'}</span></div></div>`).join('');}
+  function rR(){$('trialC').innerHTML=TRIAL[aC].map(itemRow).join('');}
   makeCB($('trialCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
 })();
 
@@ -278,7 +310,20 @@ STORAGE.forEach(s=>IDX.push({type:'儲值',limited:false,noStorage:false,code:s.
 Object.entries(PRODUCTS).forEach(([cat,subs])=>Object.entries(subs).forEach(([sub,rows])=>rows.forEach(r=>IDX.push({type:'產品',cat,sub,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'',store:r.store||'',txt:(r.name+r.code).toLowerCase()}))));
 Object.entries(TRIAL).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'體驗價',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'次',store:r.store||'守蔵',txt:(r.name+r.code).toLowerCase()})));
 
-$('openS').addEventListener('click',()=>{$('sov').classList.add('open');setTimeout(()=>$('si').focus(),100);});
+// ⑧ 自訂販售（收藏頁）：從 IDX 抓出所有被收藏的代號，統一用精簡列呈現（點☆可移除）
+function renderCustom(){
+  const favs=getFavs();
+  if(!favs.length){
+    $('customC').innerHTML=`<div class="customEmpty">還沒有收藏任何項目<br><br>到「項目」「常態套組」「猛健樂」等分頁，<br>點每一列旁邊的 <b>♡</b> 圖示，<br>就可以把常賣的品項收進這裡，方便快速查找。</div>`;
+    return;
+  }
+  const rows = favs.map(code=>IDX.find(x=>x.code===code)).filter(Boolean);
+  $('customC').innerHTML = rows.map(itemRow).join('');
+}
+document.querySelectorAll('.tab').forEach(t=>{ if(t.dataset.p==='custom') t.addEventListener('click', renderCustom); });
+renderCustom();
+
+
 $('cls').addEventListener('click',()=>{$('sov').classList.remove('open');$('si').value='';$('sres').innerHTML='<div class="sempty">輸入 S編號 或 關鍵字開始搜尋</div>';});
 $('si').addEventListener('input',function(){
   const q=this.value.trim().toLowerCase();
