@@ -4,7 +4,7 @@
 // ║  最後更新：2026/05/01                               ║
 // ╚══════════════════════════════════════════════════════╝
 
-const DATA_VERSION = "2026/05";
+const DATA_VERSION = "2026/08（部分更新：SOAZUR產品套組／S801484新增／S801269下架，其餘常態套組尚待完整核對）";
 
 // ════════════════════════════════
 // 一、項目價目表
@@ -434,6 +434,7 @@ const PACKAGES = {
       items:[{code:"S205011",name:"美特拉／(條)",ses:4}] },
   ],
   "雷射套組": [
+    { code:"S801484", name:"心動光梭(臉)／T（1）", price:6999, limited:true, noStorage:true, store:"守蔵", note:"2026/08新增｜條碼開放時間：2026/08/06起", warn:"限購一次／不可扣儲值／不可轉贈（比照原套組規範）", items:[{code:"S118001",name:"心動光梭(臉)",ses:1}] },
     { code:"S801079", name:"心動光(飛梭)／全臉（2+1）",              price:30000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S118004",name:"心動光(飛梭)／全臉",ses:3}] },
     { code:"S801099", name:"光梭雷射／2+1堂",                        price:30000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S118001",name:"心動光梭(臉)",ses:3},{code:"S118003",name:"心動光(飛梭)／局部",ses:3}] },
     { code:"S801100", name:"光梭雷射／4+3堂",                        price:60000,  limited:false, noStorage:false, store:"守蔵", note:"", warn:"", items:[{code:"S118001",name:"心動光梭(臉)",ses:7},{code:"S118003",name:"心動光(飛梭)／局部",ses:7},{code:"S118005",name:"心動光梭(脖)",ses:7}] },
@@ -606,94 +607,70 @@ const PROMO_ACTIVITIES = [
 // ════════════════════════════════
 // 五、儲值類
 // ════════════════════════════════
-
-// 政策公告／規則修正公告：會顯示在「儲值」頁籤最上方，紅框醒目提示
-const POLICY_NOTICES = [
-  {
-    title: "商品儲值舊換新",
-    body: "上週提到的舊商品卡購買新商品，經店長會議後修正：<br>"
-        + "1. 圖片為舊商品卡對應之折數。<br>"
-        + "2. 遊戲規則更新如下：<br>"
-        + "<b>無論原商品儲值卡剩餘餘額多少（即使只剩 $1），只要卡片仍有餘額，即可適用原商品儲值卡折扣。</b>",
-    example:
-        "【範例】<br>"
-      + "原卡 8 折 → 依 8 折計算後，再補足剩餘差額<br>"
-      + "原卡 85 折 → 依 85 折計算後，再補足剩餘差額<br>"
-      + "原卡 9 折 → 依 9 折計算後，再補足剩餘差額<br><br>"
-      + "商品：新版保養品套組 $15,800<br>"
-      + "持有：舊版 10 萬商品儲值卡（享 8 折優惠）<br>"
-      + "商品儲值卡餘額：僅剩 $1<br>"
-      + "計算方式：<br>"
-      + "$15,800 × 8 折 ＝ $12,640<br>"
-      + "$12,640 － 商品儲值卡餘額 $1 ＝ 需補差額 $12,639",
-    date: "店長會議修正公告"
-  },
+const STORAGE = [
+  { code:"2024PC20",  name:"醫美療程儲值20萬／贈1萬（需店長審批）",  unit:"儲值", price:200000  },
+  { code:"2024PC30",  name:"醫美療程儲值30萬／贈3萬（需店長審批）",  unit:"儲值", price:300000  },
+  { code:"2024PC50",  name:"醫美療程儲值50萬／贈8萬（需店長審批）",  unit:"儲值", price:500000  },
+  { code:"2024PC100", name:"醫美療程儲值100萬／贈20萬（需店長審批）",unit:"儲值", price:1000000 },
+  { code:"S702005",   name:"產品儲值2萬／贈$1,000",                 unit:"卡",   price:20000   },
+  { code:"S702006",   name:"產品儲值3萬／贈$3,000",                 unit:"卡",   price:30000   },
+  { code:"S702007",   name:"產品儲值6萬／贈$9,000",                 unit:"卡",   price:60000   },
+  { code:"S702008",   name:"產品儲值10萬／贈$20,000",               unit:"卡",   price:100000  },
 ];
-
-// ★分兩類：醫美療程儲值(一般) vs 產品專用儲值(只能扣產品，不可扣醫美療程)
-const STORAGE = {
-  "醫美療程儲值（需店長審批）": [
-    { code:"2024PC20",  name:"醫美療程儲值20萬／贈1萬",   unit:"儲值", price:200000  },
-    { code:"2024PC30",  name:"醫美療程儲值30萬／贈3萬",   unit:"儲值", price:300000  },
-    { code:"2024PC50",  name:"醫美療程儲值50萬／贈8萬",   unit:"儲值", price:500000  },
-    { code:"2024PC100", name:"醫美療程儲值100萬／贈20萬", unit:"儲值", price:1000000 },
-  ],
-  "產品專用儲值（只能購買產品，不可扣醫美療程）": [
-    { code:"S702005", name:"產品專儲值2萬／贈$1,000",   unit:"卡", price:20000  },
-    { code:"S702006", name:"產品專儲值3萬／贈$3,000",   unit:"卡", price:30000  },
-    { code:"S702007", name:"產品專儲值6萬／贈$9,000",   unit:"卡", price:60000  },
-    { code:"S702008", name:"產品專儲值10萬／贈$20,000", unit:"卡", price:100000 },
-  ],
-};
 
 // ════════════════════════════════
 // 六、產品類
 // ════════════════════════════════
-// ★2026/08 更新：舊「密羅木系列」已下架刪除，改為 SOAZUR系列（叢林秘境／雨林探索）
-// ★藍底＝SOAZUR套組優惠價（本月銷售重點），有 items 陣列的項目會用套組卡片呈現
+// ★2026/08 更新：密羅木系列已停售，改為 SOAZUR系列（叢林秘境／雨林探索）
+// ★結構：分類 → 子分類（單品項目 / 套組優惠），子分類內若有 items 陣列會用套組卡片呈現
+// ★套組優惠資料來源：醫美套組價目表-守葳檔期套組-0801.pdf（已用 pdfplumber 表格+底色驗證）
+// ★S803034～S803039 六筆 SOAZUR 套組（3000元/7000元/10000元/15000元套組、面膜套組、身體保養套組）
+//   已於2026/08確認斷貨下架，不予收錄，往後更新請勿再加入
 const PRODUCTS = {
-  "SOAZUR套組優惠（本月銷售重點）": [
-    { code:"S803040", name:"SOAZUR／活動套組（面膜）", price:15000, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
-      items:[
-        {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:10},
-        {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:5},
-      ]},
-    { code:"S803041", name:"SOAZUR／活動套組（買Ａ送Ｂ）", price:15800, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
-      items:[
-        {code:"S306002",name:"叢林秘境抗氧精華安瓶",ses:1},
-        {code:"S306003",name:"叢林秘境長效保濕凝乳",ses:1},
-        {code:"S307004",name:"雨林探索岩藻修護彈力霜",ses:1},
-        {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:1},
-        {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:1},
-        {code:"S307001",name:"雨林探索淨化洗顏慕斯",ses:1},
-        {code:"S306005",name:"叢林秘境拋光再生臉部去角質",ses:1},
-        {code:"S306001",name:"叢林秘境平衡保濕噴霧",ses:1},
-        {code:"S307003",name:"雨林探索UV全護防曬乳",ses:1},
-      ]},
-    { code:"S803042", name:"SOAZUR／活動套組（買Ａ送C）", price:15800, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
-      items:[
-        {code:"S306002",name:"叢林秘境抗氧精華安瓶",ses:1},
-        {code:"S306003",name:"叢林秘境長效保濕凝乳",ses:1},
-        {code:"S307004",name:"雨林探索岩藻修護彈力霜",ses:1},
-        {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:1},
-        {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:1},
-        {code:"S307002",name:"雨林探索微晶淨化身體去角質",ses:1},
-        {code:"S306004",name:"叢林秘境植萃舒敏潤膚乳",ses:2},
-      ]},
-  ],
-  "SOAZUR系列／單品": [
-    { code:"S306001", name:"叢林秘境平衡保濕噴霧",          unit:"瓶", price:1280 },
-    { code:"S306002", name:"叢林秘境抗氧精華安瓶",          unit:"瓶", price:3980 },
-    { code:"S306003", name:"叢林秘境長效保濕凝乳",          unit:"瓶", price:3980 },
-    { code:"S306004", name:"叢林秘境植萃舒敏潤膚乳",        unit:"瓶", price:1980 },
-    { code:"S306005", name:"叢林秘境拋光再生臉部去角質",    unit:"瓶", price:1580 },
-    { code:"S306006", name:"叢林秘境之巔特潤面膜（７片／盒）", unit:"盒", price:1580 },
-    { code:"S307001", name:"雨林探索淨化洗顏慕斯",          unit:"瓶", price:1280 },
-    { code:"S307002", name:"雨林探索微晶淨化身體去角質",    unit:"瓶", price:1580 },
-    { code:"S307003", name:"雨林探索UV全護防曬乳",          unit:"瓶", price:1580 },
-    { code:"S307004", name:"雨林探索岩藻修護彈力霜",        unit:"瓶", price:4980 },
-    { code:"S307005", name:"雨林探索透亮煥白面膜（5片／盒）", unit:"盒", price:1280 },
-  ],
+  "SOAZUR系列（叢林秘境／雨林探索）": {
+    "單品項目": [
+      { code:"S306001", name:"叢林秘境平衡保濕噴霧",            unit:"瓶", price:1280 },
+      { code:"S306002", name:"叢林秘境抗氧精華安瓶",            unit:"瓶", price:3980 },
+      { code:"S306003", name:"叢林秘境長效保濕凝乳",            unit:"瓶", price:3980 },
+      { code:"S306004", name:"叢林秘境植萃舒敏潤膚乳",          unit:"瓶", price:1980 },
+      { code:"S306005", name:"叢林秘境拋光再生臉部去角質",      unit:"瓶", price:1580 },
+      { code:"S306006", name:"叢林秘境之巔特潤面膜（７片／盒）", unit:"盒", price:1580 },
+      { code:"S307001", name:"雨林探索淨化洗顏慕斯",            unit:"瓶", price:1280 },
+      { code:"S307002", name:"雨林探索微晶淨化身體去角質",      unit:"瓶", price:1580 },
+      { code:"S307003", name:"雨林探索UV全護防曬乳",            unit:"瓶", price:1580 },
+      { code:"S307004", name:"雨林探索岩藻修護彈力霜",          unit:"瓶", price:4980 },
+      { code:"S307005", name:"雨林探索透亮煥白面膜（5片／盒）", unit:"盒", price:1280 },
+    ],
+    "套組優惠": [
+      { code:"S803040", name:"SOAZUR／活動套組（面膜）", price:15000, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
+        items:[
+          {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:10},
+          {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:5},
+        ]},
+      { code:"S803041", name:"SOAZUR／活動套組（買Ａ送Ｂ）", price:15800, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
+        items:[
+          {code:"S306002",name:"叢林秘境抗氧精華安瓶",ses:1},
+          {code:"S306003",name:"叢林秘境長效保濕凝乳",ses:1},
+          {code:"S307004",name:"雨林探索岩藻修護彈力霜",ses:1},
+          {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:1},
+          {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:1},
+          {code:"S307001",name:"雨林探索淨化洗顏慕斯",ses:1},
+          {code:"S306005",name:"叢林秘境拋光再生臉部去角質",ses:1},
+          {code:"S306001",name:"叢林秘境平衡保濕噴霧",ses:1},
+          {code:"S307003",name:"雨林探索UV全護防曬乳",ses:1},
+        ]},
+      { code:"S803042", name:"SOAZUR／活動套組（買Ａ送C）", price:15800, store:"守蔵", limited:false, noStorage:false, warn:"", note:"檔期：2026/08/01-2026/11/03",
+        items:[
+          {code:"S306002",name:"叢林秘境抗氧精華安瓶",ses:1},
+          {code:"S306003",name:"叢林秘境長效保濕凝乳",ses:1},
+          {code:"S307004",name:"雨林探索岩藻修護彈力霜",ses:1},
+          {code:"S306006",name:"叢林秘境之巔特潤面膜（７片／盒）",ses:1},
+          {code:"S307005",name:"雨林探索透亮煥白面膜（5片／盒）",ses:1},
+          {code:"S307002",name:"雨林探索微晶淨化身體去角質",ses:1},
+          {code:"S306004",name:"叢林秘境植萃舒敏潤膚乳",ses:2},
+        ]},
+    ],
+  },
 };
 
 // ════════════════════════════════
@@ -712,7 +689,7 @@ const TRIAL = {
     { code:"S802084", name:"Neuronox肉毒 100U／體驗",        unit:"次", price:9999,  store:"守蔵", limited:true,  noStorage:true,  warn:"" },
   ],
   "雷射體驗": [
-    { code:"S801269", name:"心動光（臉）／體驗",             unit:"次", price:8888,  store:"守蔵", limited:true, noStorage:true, warn:"" },
+    // ★2026/08 下架：S801269 心動光（臉）／體驗（原價$8,888）— 已依指示移除，不再顯示
     { code:"S801271", name:"心動光(飛梭)／全臉／體驗",       unit:"次", price:8888,  store:"守蔵", limited:true, noStorage:true, warn:"" },
     { code:"S801270", name:"心動光(飛梭)／局部／體驗",       unit:"次", price:4000,  store:"守蔵", limited:true, noStorage:true, warn:"" },
     { code:"S801272", name:"心動光（脖）／體驗",             unit:"次", price:8888,  store:"守蔵", limited:true, noStorage:true, warn:"" },
