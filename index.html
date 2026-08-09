@@ -242,13 +242,23 @@ function makeCB(el,keys,gA,sA,cb){
     </div>`).join('');
   $('stC').innerHTML=notices
     +`<div class="stnote">✅ 項目、卡項、全套組可扣（特殊套組不可扣時會標註）<br>✅ 儲值金額完款後，後贈金額才會產生<br>✅ 後贈金額僅能扣項目原價（體驗價不適用）<br>✅ 以上方案不分現金、刷卡及中租</div>`
-    +STORAGE.map(s=>`<div class="stcard"><div><div class="scname">${s.name}</div><div class="sccode">${s.code} · ${s.unit}</div></div><div class="scprice">${fmt(s.price)}</div></div>`).join('');
+    +Object.entries(STORAGE).map(([cat,cards])=>
+      `<div class="sh">${cat}</div>`
+      +cards.map(s=>`<div class="stcard"><div><div class="scname">${s.name}</div><div class="sccode">${s.code} · ${s.unit}</div></div><div class="scprice">${fmt(s.price)}</div></div>`).join('')
+    ).join('');
 })();
 
 // ⑥ 產品
 (function(){
   const cats=Object.keys(PRODUCTS);let aC=cats[0];
-  function rR(){$('proC2').innerHTML=PRODUCTS[aC].map(r=>`<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`).join('');}
+  function rR(){
+    $('proC2').innerHTML=PRODUCTS[aC].map(r=>{
+      // 有 items 陣列 → 是套組優惠（例如 SOAZUR 套組），用套組卡片呈現
+      if(r.items){ return pkgCard(r); }
+      // 一般單品 → 簡單列表呈現
+      return `<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`;
+    }).join('');
+  }
   makeCB($('proCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
 })();
 
@@ -276,8 +286,8 @@ Object.entries(ITEMS).forEach(([cat,subs])=>Object.entries(subs).forEach(([sub,r
 Object.entries(PACKAGES).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'常態套組',cat,limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()})));
 Object.entries(MJL).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'猛健樂',cat,limited:p.limited||false,noStorage:p.noStorage||false,code:p.code,name:p.name,price:p.price,store:'守蔵',txt:(p.name+p.code).toLowerCase()})));
 PROMO_PKGS.forEach(p=>IDX.push({type:'檔期',limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()}));
-STORAGE.forEach(s=>IDX.push({type:'儲值',limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()}));
-Object.values(PRODUCTS).flat().forEach(r=>IDX.push({type:'產品',limited:false,noStorage:false,code:r.code,name:r.name,price:r.price,unit:r.unit,txt:(r.name+r.code).toLowerCase()}));
+Object.entries(STORAGE).forEach(([cat,cards])=>cards.forEach(s=>IDX.push({type:'儲值',cat,limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()})));
+Object.entries(PRODUCTS).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'產品',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'',store:r.store||'',txt:(r.name+r.code).toLowerCase()})));
 Object.entries(TRIAL).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'體驗價',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'次',store:r.store||'守蔵',txt:(r.name+r.code).toLowerCase()})));
 
 $('openS').addEventListener('click',()=>{$('sov').classList.add('open');setTimeout(()=>$('si').focus(),100);});
