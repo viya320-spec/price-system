@@ -117,12 +117,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif
 
 /* Storage note + card */
 .stnote{margin:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px;font-size:14px;color:var(--txt);line-height:2;font-weight:500;}
-.notice{margin:12px;background:var(--redbg);border:2px solid var(--red);border-radius:14px;overflow:hidden;}
-.notice-hd{background:var(--red);color:#fff;padding:12px 16px;font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px;}
-.notice-bd{padding:16px;font-size:14px;color:var(--txt);line-height:1.9;font-weight:500;}
-.notice-bd b{color:var(--red);}
-.notice-ex{margin-top:10px;background:#ffffff;border:1px solid #f0c0c0;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--txt);line-height:1.85;}
-.notice-date{padding:8px 16px 14px;font-size:12px;color:var(--dim);}
 .stcard{margin:10px 12px;background:#ffffff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .scname{font-size:16px;font-weight:700;color:var(--txt);line-height:1.5;}
 .sccode{font-size:12px;color:var(--dim);font-family:monospace;margin-top:3px;}
@@ -159,7 +153,7 @@ body.big .icode,body.big .pcode,body.big .scode{font-size:110%!important;}
   <div class="pn" id="pn-mjl"><div class="cb" id="mjlCB"></div><div class="sc" id="mjlC"></div></div>
   <div class="pn" id="pn-promo"><div class="sc" id="proC"></div></div>
   <div class="pn" id="pn-storage"><div class="sc" id="stC"></div></div>
-  <div class="pn" id="pn-products"><div class="cb" id="proCB"></div><div class="sc" id="proC2"></div></div>
+  <div class="pn" id="pn-products"><div class="cb" id="proCB"></div><div class="sb" id="proSB"></div><div class="sc" id="proC2"></div></div>
   <div class="pn" id="pn-trial"><div class="cb" id="trialCB"></div><div class="sc" id="trialC"></div></div>
 </div>
 
@@ -233,33 +227,27 @@ function makeCB(el,keys,gA,sA,cb){
 
 // ⑤ 儲值
 (function(){
-  const notices=(typeof POLICY_NOTICES!=='undefined'?POLICY_NOTICES:[]).map(n=>`
-    <div class="notice">
-      <div class="notice-hd">🚨 ${n.title}</div>
-      <div class="notice-bd">${n.body}</div>
-      ${n.example?`<div class="notice-bd" style="padding-top:0"><div class="notice-ex">${n.example}</div></div>`:''}
-      ${n.date?`<div class="notice-date">📅 ${n.date}</div>`:''}
-    </div>`).join('');
-  $('stC').innerHTML=notices
-    +`<div class="stnote">✅ 項目、卡項、全套組可扣（特殊套組不可扣時會標註）<br>✅ 儲值金額完款後，後贈金額才會產生<br>✅ 後贈金額僅能扣項目原價（體驗價不適用）<br>✅ 以上方案不分現金、刷卡及中租</div>`
-    +Object.entries(STORAGE).map(([cat,cards])=>
-      `<div class="sh">${cat}</div>`
-      +cards.map(s=>`<div class="stcard"><div><div class="scname">${s.name}</div><div class="sccode">${s.code} · ${s.unit}</div></div><div class="scprice">${fmt(s.price)}</div></div>`).join('')
-    ).join('');
+  $('stC').innerHTML=`<div class="stnote">✅ 項目、卡項、全套組可扣（特殊套組不可扣時會標註）<br>✅ 儲值金額完款後，後贈金額才會產生<br>✅ 後贈金額僅能扣項目原價（體驗價不適用）<br>✅ 以上方案不分現金、刷卡及中租</div>`
+    +STORAGE.map(s=>`<div class="stcard"><div><div class="scname">${s.name}</div><div class="sccode">${s.code} · ${s.unit}</div></div><div class="scprice">${fmt(s.price)}</div></div>`).join('');
 })();
 
-// ⑥ 產品
+// ⑥ 產品（分類 → 子分類：單品項目 / 套組優惠，套組用套組卡片、單品用一般列）
 (function(){
-  const cats=Object.keys(PRODUCTS);let aC=cats[0];
+  const cats=Object.keys(PRODUCTS);
+  let aC=cats[0],aS=Object.keys(PRODUCTS[aC])[0];
+  function rS(){
+    $('proSB').innerHTML=Object.keys(PRODUCTS[aC]).map(s=>`<div class="sbtnn ${s===aS?'on':''}" data-s="${s}">${s}</div>`).join('');
+    $('proSB').querySelectorAll('.sbtnn').forEach(b=>b.addEventListener('click',()=>{aS=b.dataset.s;rS();rR();}));
+  }
   function rR(){
-    $('proC2').innerHTML=PRODUCTS[aC].map(r=>{
-      // 有 items 陣列 → 是套組優惠（例如 SOAZUR 套組），用套組卡片呈現
-      if(r.items){ return pkgCard(r); }
-      // 一般單品 → 簡單列表呈現
+    const rows=PRODUCTS[aC][aS];
+    $('proC2').innerHTML=rows.map(r=>{
+      if(r.items) return pkgCard(r); // 套組優惠：用套組卡片呈現（含品項明細、警示）
       return `<div class="ir"><div class="ii"><div class="icode">${r.code}</div><div class="iname">${r.name}</div></div><div class="irg"><div class="iprice">${fmt(r.price)}</div><span class="iunit">${r.unit}</span></div></div>`;
     }).join('');
   }
-  makeCB($('proCB'),cats,()=>aC,k=>{aC=k;},rR);rR();
+  makeCB($('proCB'),cats,()=>aC,k=>{aC=k;aS=Object.keys(PRODUCTS[k])[0];},()=>{rS();rR();});
+  rS();rR();
 })();
 
 // ⑦ 體驗價
@@ -286,8 +274,8 @@ Object.entries(ITEMS).forEach(([cat,subs])=>Object.entries(subs).forEach(([sub,r
 Object.entries(PACKAGES).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'常態套組',cat,limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()})));
 Object.entries(MJL).forEach(([cat,pkgs])=>pkgs.forEach(p=>IDX.push({type:'猛健樂',cat,limited:p.limited||false,noStorage:p.noStorage||false,code:p.code,name:p.name,price:p.price,store:'守蔵',txt:(p.name+p.code).toLowerCase()})));
 PROMO_PKGS.forEach(p=>IDX.push({type:'檔期',limited:p.limited,noStorage:p.noStorage,code:p.code,name:p.name,price:p.price,store:p.store||'',txt:(p.name+p.code).toLowerCase()}));
-Object.entries(STORAGE).forEach(([cat,cards])=>cards.forEach(s=>IDX.push({type:'儲值',cat,limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()})));
-Object.entries(PRODUCTS).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'產品',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'',store:r.store||'',txt:(r.name+r.code).toLowerCase()})));
+STORAGE.forEach(s=>IDX.push({type:'儲值',limited:false,noStorage:false,code:s.code,name:s.name,price:s.price,unit:s.unit,txt:(s.name+s.code).toLowerCase()}));
+Object.entries(PRODUCTS).forEach(([cat,subs])=>Object.entries(subs).forEach(([sub,rows])=>rows.forEach(r=>IDX.push({type:'產品',cat,sub,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'',store:r.store||'',txt:(r.name+r.code).toLowerCase()}))));
 Object.entries(TRIAL).forEach(([cat,rows])=>rows.forEach(r=>IDX.push({type:'體驗價',cat,limited:r.limited||false,noStorage:r.noStorage||false,code:r.code,name:r.name,price:r.price,unit:r.unit||'次',store:r.store||'守蔵',txt:(r.name+r.code).toLowerCase()})));
 
 $('openS').addEventListener('click',()=>{$('sov').classList.add('open');setTimeout(()=>$('si').focus(),100);});
